@@ -17,7 +17,7 @@ with open(snakemake.input.ids_file) as f:
 
 # Write all ids
 SeqIO.write(
-    (record for record in SeqIO.parse(snakemake.params.full_fasta, "fasta") if record.id in ids),
+    (record for record in SeqIO.parse(snakemake.params.full_fasta, "fasta") if format_gisaid_record_id(record.id) in ids),
     snakemake.output.fasta,
     "fasta"
 )
