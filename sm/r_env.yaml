@@ -1,0 +1,11 @@
+channels:
+  - conda-forge
+dependencies:
+  - r-base=4.1.3
+  - r-logger
+  - r-tidyverse
+  - r-ape
+  - r-glue
+  - bioconductor-ggtree
+  - r-castor
+  - r-phylobase
