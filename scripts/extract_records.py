@@ -4,6 +4,10 @@ from pathlib import Path
 from Bio import SeqIO
 
 
+def format_gisaid_record_id(record_id):
+    return record_id.split("|")[0]
+
+
 Path(snakemake.output.fasta_dir).mkdir(parents=True, exist_ok=True)
 
 ids = set()
@@ -19,7 +23,7 @@ for ids_file in Path(snakemake.input.ids_dir).glob("*.txt"):
             haplotype_record_ids.add(record_id)
     # Write current haplotype ids
     SeqIO.write(
-        (record for record in SeqIO.parse(snakemake.params.full_fasta, "fasta") if record.id in haplotype_record_ids),
+        (record for record in SeqIO.parse(snakemake.params.full_fasta, "fasta") if format_gisaid_record_id(record.id) in haplotype_record_ids),
         Path(snakemake.output.fasta_dir) / f"{haplotype_name}.fasta",
         "fasta"
     )
