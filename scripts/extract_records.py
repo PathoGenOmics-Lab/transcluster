@@ -8,9 +8,8 @@ def format_gisaid_record_id(record_id):
     return record_id.split("|")[0]
 
 
-haplotype_name = Path(snakemake.input.ids_dir).stem
 ids = set()
-with open(ids_file) as f:
+with open(snakemake.input.ids_file) as f:
     for line in f:
         record_id = line.strip()
         # Add to all ids
