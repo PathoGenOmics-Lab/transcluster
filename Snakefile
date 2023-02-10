@@ -1,6 +1,6 @@
 
 """
-input dir:  input/ids
+input dir:  input
 output dir: output/clusters
 """
 
@@ -18,9 +18,12 @@ def download_file(url, path):
         fw.write(response.content)
 
 
+DATASETS = [path.stem for path in Path("input").glob("*.txt")]
+
+
 rule all:
     input:
-        directory("output/clusters")
+        expand("output/{dataset}/clusters", dataset=DATASETS)
 
 
 rule download_problematic_vcf:
@@ -43,12 +46,11 @@ rule extract_records:
     threads: 1
     conda: "sm/bio_env.yaml"
     input:
-        ids_dir = directory("input/ids")
+        ids_file = "input/{dataset}.txt"
     params:
         full_fasta = config["ALIGNED_FULL_FASTA"]
     output:
-        fasta_dir = directory("output/fasta"),
-        fasta = "output/sequences.aligned.fasta"
+        fasta = "output/{dataset}/sequences.aligned.fasta"
     script:
         "scripts/extract_records.py"
 
@@ -58,7 +60,7 @@ rule phylogenetic_placement:
     shadow: "shallow"
     conda: "sm/usher_env.yaml"
     input:
-        new_samples = "output/sequences.aligned.fasta",
+        new_samples = "output/{dataset}/sequences.aligned.fasta",
         masking_vcf = "data/problematic_sites_sarsCov2.vcf",
         tree_protobuf = "data/public.all.masked.pb.gz"
     params:
@@ -66,7 +68,7 @@ rule phylogenetic_placement:
         reference_id = "NC_045512.2",
         output_directory = "pp_out"  # if shadow == "shallow", it will be removed
     output:
-        tree = "output/tree.nwk"
+        tree = "output/{dataset}/tree.nwk"
     shell:
         """
         cat {params.reference_fasta} {input.new_samples} > input.fasta
@@ -80,9 +82,9 @@ rule build_phylo4:
     threads: 1
     conda: "sm/r_env.yaml"
     input:
-        tree = "output/tree.nwk"
+        tree = "output/{dataset}/tree.nwk"
     output:
-        tree_p4 = "output/phylo4.RData"
+        tree_p4 = "output/{dataset}/phylo4.RData"
     script:
         "scripts/build_phylo4.R"
 
@@ -91,12 +93,12 @@ rule calculate_clusters:
     threads: 1
     conda: "sm/r_env.yaml"
     input:
-        ids_dir = directory("input/ids"),
-        tree_p4 = "output/phylo4.RData"
+        ids_dir = "input",
+        tree_p4 = "output/{dataset}/phylo4.RData"
     params:
         min_prop = 0.9,
         min_size = 2
     output:
-        out_dir = directory("output/clusters"),
+        out_dir = directory("output/{dataset}/clusters"),
     script:
         "scripts/phylo_clusters.R"
