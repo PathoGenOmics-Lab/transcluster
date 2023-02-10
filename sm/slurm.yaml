@@ -6,6 +6,10 @@ __default__:
   cpus: 1
   mem: 8G
   out: slurm-transcluster-%j_%x.out
+download_problematic_vcf:
+  name: tc-dv
+download_reference_tree:
+  name: tc-dt
 extract_records:
   name: tc-ex
   time: 1-00:00:00
