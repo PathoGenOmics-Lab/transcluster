@@ -5,7 +5,7 @@
 #SBATCH -t 7-00:00:00
 #SBATCH --mem 4GB
 #SBATCH -c 1
-#SBATCH -o slurm-haplotypes-%j_main.out
+#SBATCH -o slurm-transcluster-%j_main.out
 
 MAXJOBS=4
 SLURM_CONFIG="sm/slurm.yaml"
