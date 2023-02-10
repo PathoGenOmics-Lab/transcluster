@@ -13,7 +13,7 @@ configfile: "sm/config.yaml"
 
 
 def download_file(url, path):
-    response = requests.get(URL)
+    response = requests.get(url)
     with open(path, "wb") as fw:
         fw.write(response.content)
 
