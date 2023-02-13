@@ -18,12 +18,14 @@ def download_file(url, path):
         fw.write(response.content)
 
 
-DATASETS = [path.stem for path in Path("input").glob("*.txt")]
+INPUT_DIR = config["INPUT_DIR"]
+OUTPUT_DIR = config["OUTPUT_DIR"]
+DATASETS = [path.stem for path in Path(INPUT_DIR).glob("*.txt")]
 
 
 rule all:
     input:
-        expand("output/{dataset}/clusters", dataset=DATASETS)
+        expand("{OUTPUT_DIR}/{dataset}/clusters", dataset=DATASETS)
 
 
 rule download_problematic_vcf:
@@ -46,11 +48,11 @@ rule extract_records:
     threads: 1
     conda: "sm/bio_env.yaml"
     input:
-        ids_file = "input/{dataset}.txt"
+        ids_file = "{INPUT_DIR}/{dataset}.txt"
     params:
         full_fasta = config["ALIGNED_FULL_FASTA"]
     output:
-        fasta = "output/{dataset}/sequences.aligned.fasta"
+        fasta = "{OUTPUT_DIR}/{dataset}/sequences.aligned.fasta"
     script:
         "scripts/extract_records.py"
 
@@ -60,15 +62,15 @@ rule phylogenetic_placement:
     shadow: "shallow"
     conda: "sm/usher_env.yaml"
     input:
-        new_samples = "output/{dataset}/sequences.aligned.fasta",
+        new_samples = "{OUTPUT_DIR}/{dataset}/sequences.aligned.fasta",
         masking_vcf = "data/problematic_sites_sarsCov2.vcf",
         tree_protobuf = "data/public.all.masked.pb.gz"
     params:
-        reference_fasta = "data/reference.fasta",
+        reference_fasta = config["REFERENCE_FASTA"],
         reference_id = "NC_045512.2",
         output_directory = "pp_out"  # if shadow == "shallow", it will be removed
     output:
-        tree = "output/{dataset}/tree.nwk"
+        tree = "{OUTPUT_DIR}/{dataset}/tree.nwk"
     shell:
         """
         cat {params.reference_fasta} {input.new_samples} > input.fasta
@@ -82,9 +84,9 @@ rule build_phylo4:
     threads: 1
     conda: "sm/r_env.yaml"
     input:
-        tree = "output/{dataset}/tree.nwk"
+        tree = "{OUTPUT_DIR}/{dataset}/tree.nwk"
     output:
-        tree_p4 = "output/{dataset}/phylo4.RData"
+        tree_p4 = "{OUTPUT_DIR}/{dataset}/phylo4.RData"
     script:
         "scripts/build_phylo4.R"
 
@@ -93,12 +95,12 @@ rule calculate_clusters:
     threads: 1
     conda: "sm/r_env.yaml"
     input:
-        ids_file = "input/{dataset}.txt",
-        tree_p4 = "output/{dataset}/phylo4.RData"
+        ids_file = "{INPUT_DIR}/{dataset}.txt",
+        tree_p4 = "{OUTPUT_DIR}/{dataset}/phylo4.RData"
     params:
         min_prop = 0.9,
         min_size = 2
     output:
-        out_dir = directory("output/{dataset}/clusters"),
+        out_dir = directory("{OUTPUT_DIR}/{dataset}/clusters"),
     script:
         "scripts/phylo_clusters.R"
