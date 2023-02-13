@@ -8,12 +8,11 @@ library(ggtree)
 library(phylobase)
 
 
-IDS.DIR  <- snakemake@input[["ids_dir"]]
+IDS.FILE <- snakemake@input[["ids_file"]]
 TREE.P4  <- snakemake@input[["tree_p4"]]
 OUT.DIR  <- snakemake@output[["out_dir"]]
 MIN.PROP <- snakemake@params[["min_prop"]]
 MIN.SIZE <- snakemake@params[["min_size"]]
-DATASET  <- snakemake@wildcards[["dataset"]]
 
 
 calculate.clade.stats <- function(tree.p4, node, targets) {
@@ -88,25 +87,20 @@ dir.create(OUT.DIR)
 log_info("Reading Phylo4 tree")
 load(TREE.P4)
 
-log_info("Reading haplotype IDs")
-haplotypes <- data.frame()
-for (file.name in list.files(IDS.DIR, full.names = TRUE)) {
-    # Read
-    haplotype.name <- tools::file_path_sans_ext(basename(file.name))
-    labels <- read_lines(file.name)
-    # Build table for ggtree
-    haplotypes[labels, "node"] <- labels
-    haplotypes[labels, "Haplotype"] <- haplotype.name
-}
+log_info("Reading IDs")
+targets <- read_lines(IDS.FILE)
 
 log_info("Finding tree root")
 tree.root <- rootNode(tree.p4)
 
-for (haplotype.name in unique(haplotypes$Haplotype)) {
-  log_info("Calculating clusters for {haplotype.name}")
-  cluster.nodes <- compute.clusters(tree.p4, node, targets, 1, 0.9)
-  log_info("Writing clusters for {haplotype.name}")
-  create.cluster.table(tree.p4, cluster.nodes) %>% write_csv(glue("{OUT.DIR}/{haplotype.name}.csv"))
-}
+log_info("Calculating clusters")
+cluster.nodes <- compute.clusters(tree.p4, tree.root, targets, MIN.SIZE, MIN.PROP)
+cluster.table <- create.cluster.table(tree.p4, cluster.nodes)
+
+log_info("Writing clusters")
+cluster.table %>% write_csv(glue("{OUT.DIR}/clusters.csv"))
+cluster.table %>%
+  count(cluster_id) %>%
+  write_csv(glue("{OUT.DIR}/cluster_summary.csv"))
 
 log_info("All done")

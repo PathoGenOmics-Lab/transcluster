@@ -93,7 +93,7 @@ rule calculate_clusters:
     threads: 1
     conda: "sm/r_env.yaml"
     input:
-        ids_dir = "input",
+        ids_file = "input/{dataset}.txt",
         tree_p4 = "output/{dataset}/phylo4.RData"
     params:
         min_prop = 0.9,
