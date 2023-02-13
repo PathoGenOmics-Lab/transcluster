@@ -14,6 +14,8 @@ OUT.DIR  <- snakemake@output[["out_dir"]]
 MIN.PROP <- snakemake@params[["min_prop"]]
 MIN.SIZE <- snakemake@params[["min_size"]]
 
+LOG.EVERY.SECONDS <- 1
+
 
 calculate.clade.stats <- function(tree.p4, node, targets) {
   # returns prop and size
@@ -26,11 +28,38 @@ calculate.clade.stats <- function(tree.p4, node, targets) {
 compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0.9) {
 
   log_debug("Initializing queue, visited nodes and results")
-  .q <- c(node)
-  .visited <- c(node, names(tipLabels(tree.p4)))  # add tips to visited
+  .visited <- c()  # add tips to visited
   results <- c()
 
-  while (! identical(.q, numeric(0))) {
+  n.nodes <- nNodes(tree.p4)
+  t <- Sys.time()
+
+  # Check 'node' first
+  log_debug("Checking provided node {node}")
+  stats <- calculate.clade.stats(tree.p4, node, targets)
+  if ((stats[1] >= min.prop) & (stats[2] >= min.size)) {
+    log_debug("Subclades of node {node} do qualify (prop={round(stats[1], 2)}, size={stats[2]})")
+    descs <- descendants(tree.p4, node, type = "all")
+    log_debug("Marking {descs} as visited")
+    .visited <- c(.visited, descs)
+    results <- c(results, node)
+  } else {
+    log_debug("Subclades of {node} do NOT qualify (prop={round(stats[1], 2)}, size={stats[2]})")
+    log_debug("Marking {node} as visited")
+    .visited <- c(.visited, node)
+  }
+
+  log_debug("Starting loop for the rest of nodes")
+  .q <- c(node)
+  while (any(.q)) {
+    # Log every LOG.EVERY.SECONDS seconds
+    if (difftime(Sys.time(), t, units = "secs") > LOG.EVERY.SECONDS) {
+      current.n.visited <- length(.visited)
+      pct.done <- 100 * current.n.visited / n.nodes
+      log_info("Visited {current.n.visited} nodes, search {round(pct.done, 2)}% complete")
+      t <- Sys.time()
+    }
+
     # Select current node and dequeue
     node <- .q[length(.q)]
     .q <- .q[-length(.q)]
@@ -38,19 +67,21 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
     # Calculate and iterate over children
     node.children <- children(tree.p4, node)
     for (child in node.children) {
-      # If node is not visited and is internal
       if (!child %in% .visited) {
+        # Node is not visited
         stats <- calculate.clade.stats(tree.p4, child, targets)
         if ((stats[1] >= min.prop) & (stats[2] >= min.size)) {
           log_debug("Subclades of node {child} do qualify (prop={round(stats[1], 2)}, size={stats[2]})")
           # Mark as visited all members of every subclade with enough targets
           # (this way we can avoid exploring any subclade)
-          log_debug("Marking {descendants(tree.p4, child, type = 'all')} as visited")
-          .visited <- c(.visited, descendants(tree.p4, child, type = "all"))
+          descs <- descendants(tree.p4, child, type = "all")
+          log_debug("Marking {descs} as visited")
+          .visited <- c(.visited, descs)
           # Add node to results
           results <- c(results, child)
         } else {
           log_debug("Subclades of {child} do NOT qualify (prop={round(stats[1], 2)}, size={stats[2]})")
+          log_debug("Marking {child} as visited")
           # Enqueue node for further exploration and mark as visited
           .q <- c(.q, child)
           .visited <- c(.visited, child)
@@ -65,7 +96,8 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
 
 
 create.cluster.table <- function(tree.p4, cluster.nodes) {
-  df <- data.frame()
+  df <- data.frame(matrix(ncol = 2, nrow = 0))
+  colnames(df) <- c("label", "cluster_id")
   i <- 1
   for (node in cluster.nodes) {
     labels <- names(descendants(tree.p4, node, type = "tips"))
@@ -90,11 +122,11 @@ load(TREE.P4)
 log_info("Reading IDs")
 targets <- read_lines(IDS.FILE)
 
-log_info("Finding tree root")
-tree.root <- rootNode(tree.p4)
+log_info("Finding starting node")
+target.mrca <- MRCA(tree.p4, targets)
 
 log_info("Calculating clusters")
-cluster.nodes <- compute.clusters(tree.p4, tree.root, targets, MIN.SIZE, MIN.PROP)
+cluster.nodes <- compute.clusters(tree.p4, target.mrca, targets, MIN.SIZE, MIN.PROP)
 cluster.table <- create.cluster.table(tree.p4, cluster.nodes)
 
 log_info("Writing clusters")
