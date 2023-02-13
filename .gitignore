@@ -5,3 +5,4 @@
 slurm-*.out
 problematic_sites_sarsCov2.vcf
 public*.pb.gz
+/test/output/
