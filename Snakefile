@@ -83,7 +83,7 @@ rule phylogenetic_placement:
     shell:
         """
         cat {params.reference_fasta} {input.new_samples} > input.fasta
-        faToVcf -maskSites={input.masking_vcf} -ref={params.reference_id} input.fasta input.vcf
+        faToVcf -maskSites='{input.masking_vcf}' -ref='{params.reference_id}' input.fasta input.vcf
         usher -T {threads} -i {input.tree_protobuf} -v input.vcf -u -d {params.output_directory}
         cp {params.output_directory}/uncondensed-final-tree.nh {output.tree}
         """
@@ -93,7 +93,8 @@ rule build_phylo4:
     threads: 1
     conda: "sm/r_env.yaml"
     input:
-        tree = OUTPUT_DIR/"{dataset}/tree.nwk"
+        tree = OUTPUT_DIR/"{dataset}/tree.nwk",
+        ids_file = INPUT_DIR/"{dataset}.txt"
     output:
         tree_p4 = OUTPUT_DIR/"{dataset}/phylo4.RData"
     script:
