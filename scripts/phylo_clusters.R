@@ -55,7 +55,7 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
   while (any(.q)) {
     # Log every LOG.EVERY.SECONDS seconds
     if (difftime(Sys.time(), t, units = "secs") > LOG.EVERY.SECONDS) {
-      current.n.visited <- length(.visited)
+      current.n.visited <- sum(unlist(.visited))
       pct.done <- 100 * current.n.visited / n.nodes
       log_info("Visited {current.n.visited} nodes, search {round(pct.done, 2)}% complete")
       t <- Sys.time()
