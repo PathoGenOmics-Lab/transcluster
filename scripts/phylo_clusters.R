@@ -32,7 +32,6 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
   .visited <- lapply(all.nodes,
                      function(x) FALSE)
   results <- c()
-  print(.visited)
   n.nodes <- length(all.nodes)
   t <- Sys.time()
 
@@ -124,11 +123,12 @@ load(TREE.P4)
 log_info("Reading IDs")
 targets <- read_lines(IDS.FILE)
 
-log_info("Finding starting node")
-target.mrca <- MRCA(tree.p4, targets)
+log_info("Finding root node")
+tree.root <- rootNode(tree.p4)
+log_info("Root node: {tree.root}")
 
 log_info("Calculating clusters")
-cluster.nodes <- compute.clusters(tree.p4, target.mrca, targets, MIN.SIZE, MIN.PROP)
+cluster.nodes <- compute.clusters(tree.p4, tree.root, targets, MIN.SIZE, MIN.PROP)
 cluster.table <- create.cluster.table(tree.p4, cluster.nodes)
 
 log_info("Writing clusters")

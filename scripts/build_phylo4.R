@@ -25,7 +25,7 @@ tree$node.label <- NULL
 log_info("Calculating target MRCA")
 ids.mrca <- getMRCA(tree, ids)
 log_info("Trimming tree")
-tree <- extract.clade(tree, ids.mrca)
+tree <- extract.clade(tree, ids.mrca, root.edge = 1, collapse.singles = FALSE)
 log_info("Trimmed tree has {length(tree$tip.label)} tips")
 
 log_info("Converting to phylo4")
