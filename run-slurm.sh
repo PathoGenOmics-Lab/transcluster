@@ -10,9 +10,6 @@
 MAXJOBS=4
 SLURM_CONFIG="sm/slurm.yaml"
 
-source $HOME/.bashrc
-conda activate snakemake
-
 snakemake \
     --use-conda \
     --cluster-config "$SLURM_CONFIG" \
