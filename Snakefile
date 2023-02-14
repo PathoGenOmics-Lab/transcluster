@@ -27,6 +27,12 @@ def download_file(url, path):
         fw.write(response.content)
 
 
+def copy_file(from_path, to_path, chunk_size=1024):
+    with open(from_path, "rb") as f:
+        with open(to_path, "wb") as fw:
+            fw.write(f.read())
+
+
 INPUT_DIR = Path(config["INPUT_DIR"])
 OUTPUT_DIR = Path(config["OUTPUT_DIR"])
 DATASETS = [path.stem for path in INPUT_DIR.glob("*.txt")]
@@ -37,20 +43,26 @@ rule all:
         expand(OUTPUT_DIR/"{dataset}/clusters", dataset=DATASETS)
 
 
-rule download_problematic_vcf:
+rule get_problematic_vcf:
     threads: 1
     output:
         vcf_path = "data/problematic_sites_sarsCov2.vcf"
     run:
-        download_file(config["PROBLEMATIC_VCF_URL"], output.vcf_path)
+        if config["PROBLEMATIC_VCF"].startswith("https://"):
+            download_file(config["PROBLEMATIC_VCF"], output.vcf_path)
+        else:
+            copy_file(config["PROBLEMATIC_VCF"], output.vcf_path)
 
 
-rule download_reference_tree:
+rule get_reference_tree:
     threads: 1
     output:
         tree_path = "data/public.all.masked.pb.gz"
     run:
-        download_file(config["REFERENCE_TREE_URL"], output.tree_path)
+        if config["REFERENCE_TREE"].startswith("https://"):
+            download_file(config["REFERENCE_TREE"], output.tree_path)
+        else:
+            copy_file(config["REFERENCE_TREE"], output.tree_path)
 
 
 rule extract_records:
