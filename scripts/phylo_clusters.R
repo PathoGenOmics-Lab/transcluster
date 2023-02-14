@@ -45,7 +45,14 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
     .visited[descs] <- TRUE
     log_debug("Adding {node} to results")
     results <- c(results, node)
-  } else {
+  } else if (stats[1] == 0) {
+    log_debug("Subclades of node {node} do not contain any target")
+    log_debug("Calculating {node} descendants")
+    descs <- descendants(tree.p4, node, type = "all")
+    log_debug("Marking {descs} as visited")
+    .visited[descs] <- TRUE
+  }
+  else {
     log_debug("Subclades of {node} do NOT qualify (prop={round(stats[1], 2)}, size={stats[2]})")
     log_debug("Marking {node} as visited")
     .visited[node] <- TRUE
@@ -72,7 +79,7 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
       log_debug("Exploring node {node} child {child}")
       if (!.visited[[child]]) {
         log_debug("Node {child} has not been visited, calculating stats")
-        stats <- calculate.clade.stats(tree.p4, child, targets)
+        stats <- calculate.clade.stats(tree.p4, child, targets)  # prop and size
         if ((stats[1] >= min.prop) & (stats[2] >= min.size)) {
           log_debug("Subclades of node {child} DO qualify (prop={round(stats[1], 2)}, size={stats[2]})")
           # Mark as visited all members of every subclade with enough targets (to avoid exploring any subclade)
@@ -82,7 +89,15 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
           .visited[descs] <- TRUE
           log_debug("Adding {child} to results")
           results <- c(results, child)
-        } else {
+        }
+        else if (stats[1] == 0) {
+          log_debug("Subclades of node {child} do not contain any target")
+          log_debug("Calculating {child} descendants")
+          descs <- descendants(tree.p4, child, type = "all")
+          log_debug("Marking {descs} as visited")
+          .visited[descs] <- TRUE
+        }
+        else {
           log_debug("Subclades of {child} do NOT qualify (prop={round(stats[1], 2)}, size={stats[2]})")
           log_debug("Enqueuing {child}")
           .q <- c(.q, child)
