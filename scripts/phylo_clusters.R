@@ -13,8 +13,19 @@ TREE.P4  <- snakemake@input[["tree_p4"]]
 OUT.DIR  <- snakemake@output[["out_dir"]]
 MIN.PROP <- snakemake@params[["min_prop"]]
 MIN.SIZE <- snakemake@params[["min_size"]]
+LOG.EVERY.SECONDS <- snakemake@params[["log_every_seconds"]]
 
-LOG.EVERY.SECONDS <- 1
+
+log.every <- function(seconds, time.since.log, visited.nodes, total.nodes) {
+  if (difftime(Sys.time(), time.since.log, units = "secs") > seconds) {
+      current.n.visited <- sum(unlist(visited.nodes))
+      pct.done <- 100 * current.n.visited / total.nodes
+      log_info("Visited {current.n.visited} nodes, search {round(pct.done, 2)}% complete")
+      return(Sys.time())
+  } else {
+    return(time.since.log)
+  }
+}
 
 
 calculate.clade.stats <- function(tree.p4, node, targets) {
@@ -62,13 +73,8 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
   log_debug("Starting loop for the rest of nodes")
   .q <- c(node)
   while (any(.q)) {
-    # Log every LOG.EVERY.SECONDS seconds
-    if (difftime(Sys.time(), t, units = "secs") > LOG.EVERY.SECONDS) {
-      current.n.visited <- sum(unlist(.visited))
-      pct.done <- 100 * current.n.visited / n.nodes
-      log_info("Visited {current.n.visited} nodes, search {round(pct.done, 2)}% complete")
-      t <- Sys.time()
-    }
+    # Log every <LOG.EVERY.SECONDS> seconds
+    t <- log.every(LOG.EVERY.SECONDS, t, .visited, n.nodes)
 
     # Select current node and dequeue
     node <- .q[length(.q)]
@@ -90,8 +96,7 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
           .visited[descs] <- TRUE
           log_debug("Adding {child} to results")
           results <- c(results, child)
-        }
-        else {
+        } else {
           log_debug("Subclades of {child} do NOT qualify (prop={round(stats[1], 2)}, size={stats[2]})")
           if (stats[1] == 0) {
             log_debug("Subclades of node {child} do not contain any target")
@@ -117,6 +122,8 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
       } else {
         log_debug("Skipping visited node {child}")
       }
+      # Log every <LOG.EVERY.SECONDS> seconds
+      t <- log.every(LOG.EVERY.SECONDS, t, .visited, n.nodes)
     }
   }
   log_debug("Finished cluster computing")

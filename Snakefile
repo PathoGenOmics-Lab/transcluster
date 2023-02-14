@@ -121,7 +121,8 @@ rule calculate_clusters:
         tree_p4 = OUTPUT_DIR/"{dataset}/phylo4.RData"
     params:
         min_prop = 0.9,
-        min_size = 2
+        min_size = 2,
+        log_every_seconds = 60
     output:
         out_dir = directory(OUTPUT_DIR/"{dataset}/clusters"),
     script:
