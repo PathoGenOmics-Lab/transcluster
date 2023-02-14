@@ -6,7 +6,7 @@ It requires an `INPUT_DIR` (default: `input/`) containing at least one `.txt` fi
 with a list of record IDs. Records will be extracted from `ALIGNED_FULL_FASTA`
 and placed on `REFERENCE_TREE`. Then, the pipeline will look for transmission clusters
 using a BFS approach. Each ID list will be evaluated separately, possibly in parallel,
-and results will be place in a subdirectory inside `OUTPUT_DIR` (default: `output/`).
+and results will be placed in a subdirectory inside `OUTPUT_DIR` (default: `output/`).
 
 To test the pipeline, run `test-local.sh`.
 
