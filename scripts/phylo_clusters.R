@@ -19,6 +19,7 @@ LOG.EVERY.SECONDS <- 1
 
 calculate.clade.stats <- function(tree.p4, node, targets) {
   # returns prop and size
+  # TODO: execute 'descendants' only once per loop
   descendant.tips <- names(descendants(tree.p4, node, type = "tips"))
   n.tips <- length(descendant.tips)
   c(sum(descendant.tips %in% targets) / n.tips, n.tips)
@@ -90,19 +91,28 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
           log_debug("Adding {child} to results")
           results <- c(results, child)
         }
-        else if (stats[1] == 0) {
-          log_debug("Subclades of node {child} do not contain any target")
-          log_debug("Calculating {child} descendants")
-          descs <- descendants(tree.p4, child, type = "all")
-          log_debug("Marking {descs} as visited")
-          .visited[descs] <- TRUE
-        }
         else {
           log_debug("Subclades of {child} do NOT qualify (prop={round(stats[1], 2)}, size={stats[2]})")
-          log_debug("Enqueuing {child}")
-          .q <- c(.q, child)
-          log_debug("Marking {child} as visited")
-          .visited[child] <- TRUE
+          if (stats[1] == 0) {
+            log_debug("Subclades of node {child} do not contain any target")
+            if (stats[2] > 1) {
+              # Calculate descendants only with more than 1 tip in cluster
+              log_debug("Calculating {child} descendants")
+              descs <- descendants(tree.p4, child, type = "all")
+              log_debug("Marking {descs} as visited")
+              .visited[descs] <- TRUE
+            } else {
+              # There is 1 tip in cluster, just mark node as visited
+              log_debug("Marking {child} as visited")
+              .visited[child] <- TRUE
+            }
+          } else {
+            log_debug("Subclades of node {child} contain some targets")
+            log_debug("Enqueuing {child}")
+            .q <- c(.q, child)
+            log_debug("Marking {child} as visited")
+            .visited[child] <- TRUE
+          }
         }
       } else {
         log_debug("Skipping visited node {child}")
