@@ -28,7 +28,7 @@ sbatch run-slurm.sh
 
 ### `REFERENCE_TREE`
 
-You can select a reference tree with all GISAID sequences up to a date (e.g. yyyy/mm/dd) by providint the following `REFERENCE_TREE_URL`:
+You can select a reference tree with all GISAID sequences up to a date (e.g. yyyy/mm/dd) by providing the following `REFERENCE_TREE_URL`:
 
 ```
 https://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/{yyyy}/{mm}/{dd}/public-{yyyy}-{mm}-{dd}.all.masked.pb.gz
