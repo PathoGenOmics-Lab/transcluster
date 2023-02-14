@@ -2,6 +2,21 @@
 
 A Snakemake pipeline to find SARS-CoV-2 clusters in a reference phylogeny.
 
+It requires an `INPUT_DIR` (default: `input/`) containing at least one `.txt` file
+with a list of record IDs. Records will be extracted from `ALIGNED_FULL_FASTA`
+and placed on `REFERENCE_TREE`. Then, the pipeline will look for transmission clusters
+using a BFS approach. Each ID list will be evaluated separately, possibly in parallel,
+and results will be place in a subdirectory inside `OUTPUT_DIR` (default: `output/`).
+
+To test the pipeline, run `test-local.sh`.
+
+
+## Dependencies
+
+This pipeline requires `conda` and `snakemake`. The rest of dependencies are
+defined in `sm/*_env.yaml` files and should be automatically installed in the `.snakemake`
+directory upon execution.
+
 
 ## Usage
 
@@ -11,7 +26,7 @@ Command line (with 4 cores):
 snakemake --use-conda -c 4
 ```
 
-You can modify the default configuration in `sm/config.yaml` like this:
+You can override the default configuration in `sm/config.yaml` like this:
 
 ```bash
 snakemake --use-conda -c 4 --config ALIGNED_FULL_FASTA="my_full.aligned.fasta" OUTPUT_DIR="my_output_dir"
