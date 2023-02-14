@@ -43,6 +43,7 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
     descs <- descendants(tree.p4, node, type = "all")
     log_debug("Marking {descs} as visited")
     .visited[descs] <- TRUE
+    log_debug("Adding {node} to results")
     results <- c(results, node)
   } else {
     log_debug("Subclades of {node} do NOT qualify (prop={round(stats[1], 2)}, size={stats[2]})")
@@ -68,30 +69,32 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
     # Calculate and iterate over children
     node.children <- children(tree.p4, node)
     for (child in node.children) {
+      log_debug("Exploring node {node} child {child}")
       if (!.visited[[child]]) {
-        # Node is not visited
+        log_debug("Node {child} has not been visited, calculating stats")
         stats <- calculate.clade.stats(tree.p4, child, targets)
         if ((stats[1] >= min.prop) & (stats[2] >= min.size)) {
-          log_debug("Subclades of node {child} do qualify (prop={round(stats[1], 2)}, size={stats[2]})")
-          # Mark as visited all members of every subclade with enough targets
-          # (this way we can avoid exploring any subclade)
+          log_debug("Subclades of node {child} DO qualify (prop={round(stats[1], 2)}, size={stats[2]})")
+          # Mark as visited all members of every subclade with enough targets (to avoid exploring any subclade)
+          log_debug("Calculating {child} descendants")
           descs <- descendants(tree.p4, child, type = "all")
           log_debug("Marking {descs} as visited")
           .visited[descs] <- TRUE
-          # Add node to results
+          log_debug("Adding {child} to results")
           results <- c(results, child)
         } else {
           log_debug("Subclades of {child} do NOT qualify (prop={round(stats[1], 2)}, size={stats[2]})")
-          log_debug("Marking {child} as visited")
-          # Enqueue node for further exploration and mark as visited
+          log_debug("Enqueuing {child}")
           .q <- c(.q, child)
+          log_debug("Marking {child} as visited")
           .visited[child] <- TRUE
         }
       } else {
-        log_debug("Skipping node {child}")
+        log_debug("Skipping visited node {child}")
       }
     }
   }
+  log_debug("Finished cluster computing")
   results
 }
 
@@ -110,7 +113,7 @@ create.cluster.table <- function(tree.p4, cluster.nodes) {
 }
 
 
-log_threshold(INFO)
+log_threshold(DEBUG)
 
 log_info("Starting")
 
