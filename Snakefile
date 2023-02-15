@@ -107,7 +107,8 @@ rule build_phylo4:
     conda: "sm/r_env.yaml"
     input:
         tree = OUTPUT_DIR/"{dataset}/tree.nwk",
-        ids_file = INPUT_DIR/"{dataset}.txt"
+        ids_file = INPUT_DIR/"{dataset}.txt",
+        space_replacement = config["SPACE_REPLACEMENT"]
     output:
         tree_p4 = OUTPUT_DIR/"{dataset}/phylo4.RData"
     script:

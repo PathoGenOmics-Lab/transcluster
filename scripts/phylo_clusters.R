@@ -138,6 +138,7 @@ create.cluster.table <- function(tree.p4, cluster.nodes) {
   i <- 1
   for (node in cluster.nodes) {
     labels <- names(descendants(tree.p4, node, type = "tips"))
+    # Here, space replacements are replaced again with a space
     df[labels, "label"] <- gsub(SPACE.REPLACEMENT, " ", labels)
     df[labels, "cluster_id"] <- i
     i <- i + 1
@@ -157,7 +158,7 @@ log_info("Reading Phylo4 tree")
 load(TREE.P4)
 
 log_info("Reading IDs")
-targets <- read_lines(IDS.FILE)
+targets <- read_lines(IDS.FILE) %>% gsub(" ", SPACE.REPLACEMENT, .)
 
 log_info("Finding root node")
 tree.root <- rootNode(tree.p4)

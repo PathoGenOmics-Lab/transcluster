@@ -9,9 +9,10 @@ library(logger)
 TREE     <- snakemake@input[["tree"]]
 IDS.FILE <- snakemake@input[["ids_file"]]
 OUT.FILE <- snakemake@output[["tree_p4"]]
+SPACE.REPLACEMENT <- snakemake@params[["space_replacement"]]
 
 log_info("Reading target IDs")
-ids <- read_lines(IDS.FILE)
+ids <- read_lines(IDS.FILE) %>% gsub(" ", SPACE.REPLACEMENT, .)
 log_info("Read {length(ids)} IDs")
 
 log_info("Reading Newick tree")
