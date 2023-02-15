@@ -12,19 +12,19 @@ get_reference_tree:
   name: tc-dt
 extract_records:
   name: tc-ex
-  time: 1-00:00:00
-  mem: 32G
+  time: 06:00:00
+  mem: 16G
 phylogenetic_placement:
   name: tc-pp
   cpus: 32
-  mem: 32G
-  time: 1-00:00:00
+  mem: 16G
+  time: 12:00:00
 build_phylo4:
   name: tc-p4
   mem: 16G
-  time: 1-00:00:00
+  time: 12:00:00
 calculate_clusters:
   name: tc-cc
   qos: medium
-  mem: 32G
+  mem: 16G
   time: 7-00:00:00
