@@ -71,7 +71,8 @@ rule extract_records:
     input:
         ids_file = INPUT_DIR/"{dataset}.txt"
     params:
-        full_fasta = config["ALIGNED_FULL_FASTA"]
+        full_fasta = config["ALIGNED_FULL_FASTA"],
+        space_replacement = config["SPACE_REPLACEMENT"]
     output:
         fasta = OUTPUT_DIR/"{dataset}/sequences.aligned.fasta"
     script:
@@ -122,7 +123,8 @@ rule calculate_clusters:
     params:
         min_prop = 0.9,
         min_size = 2,
-        log_every_seconds = 60
+        log_every_seconds = 60,
+        space_replacement = config["SPACE_REPLACEMENT"]
     output:
         out_dir = directory(OUTPUT_DIR/"{dataset}/clusters"),
     script:

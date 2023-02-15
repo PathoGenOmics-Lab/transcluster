@@ -14,6 +14,7 @@ OUT.DIR  <- snakemake@output[["out_dir"]]
 MIN.PROP <- snakemake@params[["min_prop"]]
 MIN.SIZE <- snakemake@params[["min_size"]]
 LOG.EVERY.SECONDS <- snakemake@params[["log_every_seconds"]]
+SPACE.REPLACEMENT <- snakemake@params[["space_replacement"]]
 
 
 log.every <- function(seconds, time.since.log, visited.nodes, total.nodes) {
@@ -137,7 +138,7 @@ create.cluster.table <- function(tree.p4, cluster.nodes) {
   i <- 1
   for (node in cluster.nodes) {
     labels <- names(descendants(tree.p4, node, type = "tips"))
-    df[labels, "label"] <- labels
+    df[labels, "label"] <- gsub(SPACE.REPLACEMENT, " ", labels)
     df[labels, "cluster_id"] <- i
     i <- i + 1
   }

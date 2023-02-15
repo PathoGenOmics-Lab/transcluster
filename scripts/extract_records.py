@@ -5,7 +5,7 @@ from Bio import SeqIO
 
 
 def format_gisaid_record_id(record_id):
-    return record_id.split("|")[0]
+    return record_id.split("|")[0].replace(" ", snakemake.params.space_replacement)
 
 
 def iter_format_records(records):

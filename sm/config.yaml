@@ -10,3 +10,5 @@ INPUT_DIR:
   "input"
 OUTPUT_DIR:
   "output"
+SPACE_REPLACEMENT:
+  "__WS__"
