@@ -8,8 +8,6 @@ and placed on `REFERENCE_TREE`. Then, the pipeline will look for transmission cl
 using a BFS approach. Each ID list will be evaluated separately, possibly in parallel,
 and results will be placed in a subdirectory inside `OUTPUT_DIR` (default: `output/`).
 
-To test the pipeline, run `test-local.sh`.
-
 
 ## Dependencies
 
@@ -59,3 +57,13 @@ It must be aligned to `REFERENCE_FASTA`!
 
 You probably don't need to change it, but you may want to be more or less flexible regarding problematic sites.
 To do that, you can select a locally stored VCF with problematic sites by providing its path.
+
+
+## Testing the pipeline
+
+To test the pipeline, run `test-local.sh`.
+
+Cluster search is the most time-consuming task. Run time should be heavily
+dependent on tree structure. For a tree with around 1M tips, run time was around 8 hours, and is expected to increase somewhat linearly (see image below).
+
+![](test/example2_run.png)
