@@ -18,11 +18,11 @@ phylogenetic_placement:
   name: tc-pp
   cpus: 32
   mem: 16G
-  time: 12:00:00
+  time: 1-00:00:00
 build_phylo4:
   name: tc-p4
   mem: 16G
-  time: 12:00:00
+  time: 1-00:00:00
 calculate_clusters:
   name: tc-cc
   qos: medium
