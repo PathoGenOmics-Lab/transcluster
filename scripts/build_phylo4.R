@@ -6,18 +6,19 @@ library(tidyverse)
 library(ape)
 library(logger)
 
-TREE     <- snakemake@input[["tree"]]
-IDS.FILE <- snakemake@input[["ids_file"]]
+TREE <- snakemake@input[["tree"]]
+EXTRACTED.IDS <- snakemake@input[["extracted_ids"]]
 OUT.FILE <- snakemake@output[["tree_p4"]]
-SPACE.REPLACEMENT <- snakemake@params[["space_replacement"]]
 
 log_info("Reading target IDs")
-ids <- read_lines(IDS.FILE) %>% gsub(" ", SPACE.REPLACEMENT, .)
+ids <- read_csv(EXTRACTED.IDS)$modified_id
 log_info("Read {length(ids)} IDs")
 
 log_info("Reading Newick tree")
 tree <- read.tree(TREE)
 log_info("Tree has {length(tree$tip.label)} tips")
+
+log_info("{sum(ids %in% tree$tip.label)}/{length(ids)} IDs are tips in tree")
 
 log_info("Correcting UShER tree edge lengths")
 tree$edge.length[is.na(tree$edge.length)] <- 0

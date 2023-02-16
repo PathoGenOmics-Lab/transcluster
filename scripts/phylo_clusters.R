@@ -8,13 +8,12 @@ library(ggtree)
 library(phylobase)
 
 
-IDS.FILE <- snakemake@input[["ids_file"]]
+EXTRACTED.IDS <- snakemake@input[["extracted_ids"]]
 TREE.P4  <- snakemake@input[["tree_p4"]]
 OUT.DIR  <- snakemake@output[["out_dir"]]
 MIN.PROP <- snakemake@params[["min_prop"]]
 MIN.SIZE <- snakemake@params[["min_size"]]
 LOG.EVERY.SECONDS <- snakemake@params[["log_every_seconds"]]
-SPACE.REPLACEMENT <- snakemake@params[["space_replacement"]]
 
 
 log.every <- function(seconds, time.since.log, visited.nodes, total.nodes) {
@@ -139,7 +138,7 @@ create.cluster.table <- function(tree.p4, cluster.nodes) {
   for (node in cluster.nodes) {
     labels <- names(descendants(tree.p4, node, type = "tips"))
     # Here, space replacements are replaced again with a space
-    df[labels, "label"] <- gsub(SPACE.REPLACEMENT, " ", labels)
+    df[labels, "label"] <- labels
     df[labels, "cluster_id"] <- i
     i <- i + 1
   }
@@ -157,8 +156,10 @@ dir.create(OUT.DIR)
 log_info("Reading Phylo4 tree")
 load(TREE.P4)
 
-log_info("Reading IDs")
-targets <- read_lines(IDS.FILE) %>% gsub(" ", SPACE.REPLACEMENT, .)
+log_info("Reading target IDs")
+extracted.ids <- read_csv(EXTRACTED.IDS)
+targets <- extracted.ids$modified_id
+log_info("{length(targets)} targets read")
 
 log_info("Finding root node")
 tree.root <- rootNode(tree.p4)
@@ -166,7 +167,8 @@ log_info("Root node: {tree.root}")
 
 log_info("Calculating clusters")
 cluster.nodes <- compute.clusters(tree.p4, tree.root, targets, MIN.SIZE, MIN.PROP)
-cluster.table <- create.cluster.table(tree.p4, cluster.nodes)
+cluster.table <- create.cluster.table(tree.p4, cluster.nodes) %>%
+  left_join(extracted.ids, by = c("label" = "modified_id"))
 
 log_info("Writing clusters")
 cluster.table %>% write_csv(glue("{OUT.DIR}/clusters.csv"))

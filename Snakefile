@@ -71,10 +71,10 @@ rule extract_records:
     input:
         ids_file = INPUT_DIR/"{dataset}.txt"
     params:
-        full_fasta = config["ALIGNED_FULL_FASTA"],
-        space_replacement = config["SPACE_REPLACEMENT"]
+        full_fasta = config["ALIGNED_FULL_FASTA"]
     output:
-        fasta = OUTPUT_DIR/"{dataset}/sequences.aligned.fasta"
+        fasta = OUTPUT_DIR/"{dataset}/sequences.aligned.fasta",
+        extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv"
     script:
         "scripts/extract_records.py"
 
@@ -107,9 +107,7 @@ rule build_phylo4:
     conda: "sm/r_env.yaml"
     input:
         tree = OUTPUT_DIR/"{dataset}/tree.nwk",
-        ids_file = INPUT_DIR/"{dataset}.txt"
-    params:
-        space_replacement = config["SPACE_REPLACEMENT"]
+        extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv"
     output:
         tree_p4 = OUTPUT_DIR/"{dataset}/phylo4.RData"
     script:
@@ -120,14 +118,13 @@ rule calculate_clusters:
     threads: 1
     conda: "sm/r_env.yaml"
     input:
-        ids_file = INPUT_DIR/"{dataset}.txt",
-        tree_p4 = OUTPUT_DIR/"{dataset}/phylo4.RData"
+        tree_p4 = OUTPUT_DIR/"{dataset}/phylo4.RData",
+        extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv"
     params:
         min_prop = 0.9,
         min_size = 2,
-        log_every_seconds = 60,
-        space_replacement = config["SPACE_REPLACEMENT"]
+        log_every_seconds = 60
     output:
-        out_dir = directory(OUTPUT_DIR/"{dataset}/clusters"),
+        out_dir = directory(OUTPUT_DIR/"{dataset}/clusters")
     script:
         "scripts/phylo_clusters.R"
