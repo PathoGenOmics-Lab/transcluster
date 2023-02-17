@@ -1,30 +1,30 @@
 __default__:
   qos: short
-  name: tc
+  name: job
   time: 03:00:00
   nodes: 1
   cpus: 1
   mem: 8G
   out: slurm-transcluster-%j_%x.out
 get_problematic_vcf:
-  name: tc-dv
+  name: dv
 get_reference_tree:
-  name: tc-dt
+  name: dt
 extract_records:
-  name: tc-ex
+  name: ex
   time: 06:00:00
   mem: 16G
 phylogenetic_placement:
-  name: tc-pp
+  name: pp
   cpus: 32
   mem: 16G
   time: 1-00:00:00
 build_phylo4:
-  name: tc-p4
+  name: p4
   mem: 16G
   time: 1-00:00:00
 calculate_clusters:
-  name: tc-cc
+  name: cc
   qos: medium
   mem: 16G
   time: 7-00:00:00
