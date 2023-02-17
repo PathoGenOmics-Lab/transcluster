@@ -150,7 +150,7 @@ create.cluster.table <- function(tree.p4, cluster.nodes) {
 }
 
 
-log_threshold(DEBUG)  # TODO
+log_threshold(INFO)
 
 log_info("Starting")
 
