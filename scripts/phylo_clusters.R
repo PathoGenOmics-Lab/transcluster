@@ -16,12 +16,15 @@ MIN.SIZE <- snakemake@params[["min_size"]]
 LOG.EVERY.SECONDS <- snakemake@params[["log_every_seconds"]]
 
 
-log.every <- function(seconds, time.since.log, visited.nodes, total.nodes) {
-  if (difftime(Sys.time(), time.since.log, units = "secs") > seconds) {
+log.every <- function(seconds, t0, time.since.log, visited.nodes, total.nodes) {
+  t.now <- Sys.time()
+  if (difftime(t.now, time.since.log, units = "secs") > seconds) {
       current.n.visited <- sum(unlist(visited.nodes))
-      pct.done <- 100 * current.n.visited / total.nodes
-      log_info("Visited {current.n.visited} nodes, search {round(pct.done, 2)}% complete")
-      return(Sys.time())
+      pct.done <- round(100 * current.n.visited / total.nodes, 2)
+      time.elapsed <- as.numeric(difftime(t.now, t0, units = "hours"))
+      time.left <- round((total.nodes - current.n.visited) / (current.n.visited / time.elapsed))
+      log_info("Visited {current.n.visited} nodes, search {pct.done}% complete, {time.left}h left")
+      return(t.now)
   } else {
     return(time.since.log)
   }
@@ -71,10 +74,11 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
   }
 
   log_debug("Starting loop for the rest of nodes")
+  t0 <- Sys.time()
   .q <- c(node)
   while (any(.q)) {
     # Log every <LOG.EVERY.SECONDS> seconds
-    t <- log.every(LOG.EVERY.SECONDS, t, .visited, n.nodes)
+    t <- log.every(LOG.EVERY.SECONDS, t0, t, .visited, n.nodes)
 
     # Select current node and dequeue
     node <- .q[length(.q)]
@@ -123,7 +127,7 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
         log_debug("Skipping visited node {child}")
       }
       # Log every <LOG.EVERY.SECONDS> seconds
-      t <- log.every(LOG.EVERY.SECONDS, t, .visited, n.nodes)
+      t <- log.every(LOG.EVERY.SECONDS, t0, t, .visited, n.nodes)
     }
   }
   log_debug("Finished cluster computing")
@@ -146,7 +150,7 @@ create.cluster.table <- function(tree.p4, cluster.nodes) {
 }
 
 
-log_threshold(DEBUG)
+log_threshold(DEBUG)  # TODO
 
 log_info("Starting")
 
