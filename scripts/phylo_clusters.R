@@ -22,7 +22,7 @@ log.every <- function(seconds, t0, time.since.log, visited.nodes, total.nodes) {
       current.n.visited <- sum(unlist(visited.nodes))
       pct.done <- round(100 * current.n.visited / total.nodes, 2)
       time.elapsed <- as.numeric(difftime(t.now, t0, units = "hours"))
-      time.left <- round((total.nodes - current.n.visited) / (current.n.visited / time.elapsed))
+      time.left <- round((total.nodes - current.n.visited) / (current.n.visited / time.elapsed), 1)
       log_info("Visited {current.n.visited} nodes, search {pct.done}% complete, {time.left}h left")
       return(t.now)
   } else {
