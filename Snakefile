@@ -45,6 +45,7 @@ rule all:
 
 rule get_problematic_vcf:
     threads: 1
+    shadow: "shallow"
     output:
         vcf_path = "data/problematic_sites_sarsCov2.vcf"
     run:
@@ -56,6 +57,7 @@ rule get_problematic_vcf:
 
 rule get_reference_tree:
     threads: 1
+    shadow: "shallow"
     output:
         tree_path = "data/public.all.masked.pb.gz"
     run:
@@ -67,6 +69,7 @@ rule get_reference_tree:
 
 rule extract_records:
     threads: 1
+    shadow: "shallow"
     conda: "sm/bio_env.yaml"
     input:
         ids_file = INPUT_DIR/"{dataset}.txt"
@@ -104,6 +107,7 @@ rule phylogenetic_placement:
 
 rule build_phylo4:
     threads: 1
+    shadow: "shallow"
     conda: "sm/r_env.yaml"
     input:
         tree = OUTPUT_DIR/"{dataset}/tree.nwk",
@@ -116,6 +120,7 @@ rule build_phylo4:
 
 rule calculate_clusters:
     threads: 1
+    shadow: "shallow"
     conda: "sm/r_env.yaml"
     input:
         tree_p4 = OUTPUT_DIR/"{dataset}/phylo4.RData",
