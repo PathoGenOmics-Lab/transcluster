@@ -33,7 +33,7 @@ for record in SeqIO.parse(snakemake.params.full_fasta, "fasta"):
         if col_date and sub_date:
             new_record_id = fix_spaces("|".join([record_id.replace("hCoV-19/", ""), col_date]))
         else:
-            new_record_id = fix_spaces("|".join([record_id, col_date]))
+            new_record_id = fix_spaces(record_id)
         # Rename ID and keep track of the modification
         record.description = new_record_id
         record.id = new_record_id
