@@ -127,8 +127,7 @@ rule calculate_clusters:
         extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv"
     params:
         min_prop = 0.9,
-        min_size = 2,
-        log_every_seconds = 60
+        min_size = 2
     output:
         out_dir = directory(OUTPUT_DIR/"{dataset}/clusters")
     script:
