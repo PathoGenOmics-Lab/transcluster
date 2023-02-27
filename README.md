@@ -8,8 +8,6 @@ and placed on `REFERENCE_TREE`. Then, the pipeline will look for transmission cl
 using a BFS approach. Each ID list will be evaluated separately, possibly in parallel,
 and results will be placed in a subdirectory inside `OUTPUT_DIR` (default: `output/`).
 
-By default, remaining run time will be calculated very naively every 60 seconds during the clustering phase.
-It may start with a ridiculously high number, but should decrease rapidly!
 
 ## Dependencies
 
@@ -66,7 +64,6 @@ To do that, you can select a locally stored VCF with problematic sites by provid
 To test the pipeline, run `test-local.sh`.
 
 Cluster search is the most time-consuming task. Run time should be heavily
-dependent on tree structure. For a tree with around 1M tips, run time was around 8 hours,
-and is expected to increase somewhat linearly (see image below).
-
-![](test/example2_run.png)
+dependent on tree structure. Time is expected to increase somewhat linearly,
+but the diversity of the target set of sequences will be a major factor too.
+Expect higher run times with more diverse sets.
