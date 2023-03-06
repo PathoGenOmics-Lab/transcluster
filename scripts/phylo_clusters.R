@@ -97,8 +97,8 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
       }
       par.result
     }
-    results <- c(results, sapply(par.output, function(x) x$selectedNode))
-    .q <- c(.q, sapply(par.output, function(x) x$queuedNode))
+    results <- c(results, unlist(sapply(par.output, function(x) x$selectedNode)))
+    .q <- c(.q, unlist(sapply(par.output, function(x) x$queuedNode)))
   }
   log_debug("Finished cluster computing")
   results
