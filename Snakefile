@@ -119,7 +119,7 @@ rule build_phylo4:
 
 
 rule calculate_clusters:
-    threads: 1
+    threads: 16
     shadow: "shallow"
     conda: "sm/r_env.yaml"
     input:

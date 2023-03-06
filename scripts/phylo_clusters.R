@@ -7,19 +7,34 @@ library(logger)
 library(ggtree)
 library(phylobase)
 
+library(doParallel)
+
 
 EXTRACTED.IDS <- snakemake@input[["extracted_ids"]]
 TREE.P4  <- snakemake@input[["tree_p4"]]
 OUT.DIR  <- snakemake@output[["out_dir"]]
 MIN.PROP <- snakemake@params[["min_prop"]]
 MIN.SIZE <- snakemake@params[["min_size"]]
+NCPU <- snakemake@threads
 
+registerDoParallel(NCPU)
 
 calculate.clade.stats <- function(tree.p4, node, targets) {
   # returns prop and size
   descendant.tips <- names(descendants(tree.p4, node, type = "tips"))
   n.tips <- length(descendant.tips)
   c(sum(descendant.tips %in% targets) / n.tips, n.tips)
+}
+
+
+ParallelCladeResult <- function(queuedNode = NULL, selectedNode = NULL) {
+  # source: https://stackoverflow.com/a/44101674
+  me <- list(
+    queuedNodes = queuedNode,
+    selectedNodes = selectedNode
+  )
+  class(me) <- append(class(me), "ParallelCladeResult")
+  return(me)
 }
 
 
@@ -54,12 +69,11 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
 
     # Calculate and iterate over children
     node.children <- children(tree.p4, node)
-    for (child in node.children) {
+    selected.node.children <- node.children[node.type[node.children] != "tip"]
+    log_debug("Discarding {length(node.children) - length(selected.node.children)} child tips of {node}")
 
-      if (node.type[child] == "tip") {
-        log_debug("Exploring {node}: skipping tip {child}")
-        next
-      }
+    par.output <- foreach(child = node.children, .combine = c) %dopar% {
+      par.result <- ParallelCladeResult()
 
       log_debug("Exploring {node}: calculating {child} stats")
       stats <- calculate.clade.stats(tree.p4, child, targets)  # prop and size
@@ -67,7 +81,7 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
       if ((stats[1] >= min.prop) && (stats[2] >= min.size)) {
         log_debug("{child} qualifies (prop={round(stats[1], 6)}, size={stats[2]})")
         log_debug("{child} to results")
-        results <- c(results, child)
+        par.result$selectedNode <- child
       } else {
         log_debug("{child} does not qualify (prop={round(stats[1], 6)}, size={stats[2]})")
 
@@ -78,10 +92,13 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
           # Here some subclade could be selected
           log_debug("{child} contains {stats[1]*stats[2]} targets")
           log_debug("Enqueuing {child}")
-          .q <- c(.q, child)
+          par.result$queuedNode <- child
         }
       }
+      par.result
     }
+    results <- c(results, par.output$selectedNode)
+    .q <- c(.q, par.output$queuedNode)
   }
   log_debug("Finished cluster computing")
   results
