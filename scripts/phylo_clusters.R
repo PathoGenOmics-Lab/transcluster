@@ -72,7 +72,7 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
     selected.node.children <- node.children[node.type[node.children] != "tip"]
     log_debug("Discarding {length(node.children) - length(selected.node.children)} child tips of {node}")
 
-    par.output <- foreach(child = node.children, .combine = c) %dopar% {
+    par.output <- foreach(child = node.children) %dopar% {
       par.result <- ParallelCladeResult()
 
       log_debug("Exploring {node}: calculating {child} stats")
@@ -97,8 +97,8 @@ compute.clusters <- function(tree.p4, node, targets, min.size = 1, min.prop =  0
       }
       par.result
     }
-    results <- c(results, par.output$selectedNode)
-    .q <- c(.q, par.output$queuedNode)
+    results <- c(results, sapply(par.output, function(x) x$selectedNode))
+    .q <- c(.q, sapply(par.output, function(x) x$queuedNode))
   }
   log_debug("Finished cluster computing")
   results
