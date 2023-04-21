@@ -25,7 +25,7 @@ build_phylo4:
   time: 1-00:00:00
 calculate_clusters:
   name: cc
-  cpus: 16
-  qos: medium
-  mem: 16G
-  time: 7-00:00:00
+  cpus: 32
+  qos: long
+  mem: 32G
+  time: 15-00:00:00

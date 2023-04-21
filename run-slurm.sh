@@ -2,7 +2,7 @@
 #SBATCH -J tc
 #SBATCH --part global
 #SBATCH --qos medium
-#SBATCH -t 7-00:00:00
+#SBATCH -t 15-00:00:00
 #SBATCH --mem 4GB
 #SBATCH -c 1
 #SBATCH -o slurm-transcluster-%j_main.out
