@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #SBATCH -J tc
 #SBATCH --part global
-#SBATCH --qos medium
+#SBATCH --qos long
 #SBATCH -t 15-00:00:00
 #SBATCH --mem 4GB
 #SBATCH -c 1
