@@ -71,7 +71,7 @@ rule get_reference_tree:
 rule extract_records:
     threads: 1
     shadow: "shallow"
-    conda: "../envs/bio.yaml"
+    conda: "envs/bio.yaml"
     input:
         ids_file = INPUT_DIR/"{dataset}.txt"
     params:
@@ -80,13 +80,13 @@ rule extract_records:
         fasta = OUTPUT_DIR/"{dataset}/sequences.aligned.fasta",
         extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv"
     script:
-        "../scripts/extract_records.py"
+        "scripts/extract_records.py"
 
 
 rule phylogenetic_placement:
     threads: 32
     shadow: "shallow"
-    conda: "../envs/usher.yaml"
+    conda: "envs/usher.yaml"
     input:
         new_samples = OUTPUT_DIR/"{dataset}/sequences.aligned.fasta",
         masking_vcf = "data/problematic_sites_sarsCov2.vcf",
@@ -109,20 +109,20 @@ rule phylogenetic_placement:
 rule build_phylo4:
     threads: 1
     shadow: "shallow"
-    conda: "../envs/r.yaml"
+    conda: "envs/r.yaml"
     input:
         tree = OUTPUT_DIR/"{dataset}/tree.nwk",
         extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv"
     output:
         tree_p4 = OUTPUT_DIR/"{dataset}/phylo4.RData"
     script:
-        "../scripts/build_phylo4.R"
+        "scripts/build_phylo4.R"
 
 
 rule calculate_clusters:
     threads: 32
     shadow: "shallow"
-    conda: "../envs/r.yaml"
+    conda: "envs/r.yaml"
     input:
         tree_p4 = OUTPUT_DIR/"{dataset}/phylo4.RData",
         extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv"
@@ -132,13 +132,13 @@ rule calculate_clusters:
     output:
         out_dir = directory(OUTPUT_DIR/"{dataset}/clusters")
     script:
-        "../scripts/phylo_clusters.R"
+        "scripts/phylo_clusters.R"
 
 
 rule summarize_results:
     threads: 1
     shadow: "shallow"
-    conda: "../envs/tables.yaml"
+    conda: "envs/tables.yaml"
     input:
         cluster_dir = directory(OUTPUT_DIR/"{dataset}/clusters"),
         extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv",
@@ -146,4 +146,4 @@ rule summarize_results:
     output:
         table = OUTPUT_DIR/"{dataset}/summary.json"
     script:
-        "../scripts/summarize_results.py"
+        "scripts/summarize_results.py"
