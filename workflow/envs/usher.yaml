@@ -3,4 +3,4 @@ channels:
   - bioconda
   - defaults
 dependencies:
-  - usher
+  - usher==0.6.2
