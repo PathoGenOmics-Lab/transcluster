@@ -9,7 +9,7 @@
 
 MAXJOBS=4
 SHADOW="/scr/$USER"
-SLURM_CONFIG="sm/slurm.yaml"
+SLURM_CONFIG="config/slurm.yaml"
 
 snakemake \
     --use-conda \

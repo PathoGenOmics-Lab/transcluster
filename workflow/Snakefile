@@ -9,7 +9,7 @@ import json
 import requests
 from pathlib import Path
 
-configfile: "sm/config.yaml"
+configfile: "config/config.yaml"
 
 
 def read_fasta_IDs(path):
@@ -70,7 +70,7 @@ rule get_reference_tree:
 rule extract_records:
     threads: 1
     shadow: "shallow"
-    conda: "sm/bio_env.yaml"
+    conda: "../envs/bio.yaml"
     input:
         ids_file = INPUT_DIR/"{dataset}.txt"
     params:
@@ -79,13 +79,13 @@ rule extract_records:
         fasta = OUTPUT_DIR/"{dataset}/sequences.aligned.fasta",
         extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv"
     script:
-        "scripts/extract_records.py"
+        "../scripts/extract_records.py"
 
 
 rule phylogenetic_placement:
     threads: 32
     shadow: "shallow"
-    conda: "sm/usher_env.yaml"
+    conda: "../envs/usher.yaml"
     input:
         new_samples = OUTPUT_DIR/"{dataset}/sequences.aligned.fasta",
         masking_vcf = "data/problematic_sites_sarsCov2.vcf",
@@ -108,20 +108,20 @@ rule phylogenetic_placement:
 rule build_phylo4:
     threads: 1
     shadow: "shallow"
-    conda: "sm/r_env.yaml"
+    conda: "../envs/r.yaml"
     input:
         tree = OUTPUT_DIR/"{dataset}/tree.nwk",
         extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv"
     output:
         tree_p4 = OUTPUT_DIR/"{dataset}/phylo4.RData"
     script:
-        "scripts/build_phylo4.R"
+        "../scripts/build_phylo4.R"
 
 
 rule calculate_clusters:
     threads: 16
     shadow: "shallow"
-    conda: "sm/r_env.yaml"
+    conda: "../envs/r.yaml"
     input:
         tree_p4 = OUTPUT_DIR/"{dataset}/phylo4.RData",
         extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv"
@@ -131,4 +131,4 @@ rule calculate_clusters:
     output:
         out_dir = directory(OUTPUT_DIR/"{dataset}/clusters")
     script:
-        "scripts/phylo_clusters.R"
+        "../scripts/phylo_clusters.R"
