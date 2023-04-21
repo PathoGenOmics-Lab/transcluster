@@ -40,7 +40,8 @@ DATASETS = [path.stem for path in INPUT_DIR.glob("*.txt")]
 
 rule all:
     input:
-        expand(OUTPUT_DIR/"{dataset}/clusters", dataset=DATASETS)
+        expand(OUTPUT_DIR/"{dataset}/clusters", dataset=DATASETS),
+        expand(OUTPUT_DIR/"{dataset}/summary.json", dataset=DATASETS),
 
 
 rule get_problematic_vcf:
@@ -132,3 +133,17 @@ rule calculate_clusters:
         out_dir = directory(OUTPUT_DIR/"{dataset}/clusters")
     script:
         "../scripts/phylo_clusters.R"
+
+
+rule summarize_results:
+    threads: 1
+    shadow: "shallow"
+    conda: "../envs/tables.yaml"
+    input:
+        cluster_dir = directory(OUTPUT_DIR/"{dataset}/clusters"),
+        extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv",
+        ids_file = INPUT_DIR/"{dataset}.txt"
+    output:
+        table = OUTPUT_DIR/"{dataset}/summary.json"
+    script:
+        "../scripts/summarize_results.py"
