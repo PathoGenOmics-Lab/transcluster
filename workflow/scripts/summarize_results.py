@@ -29,14 +29,14 @@ if __name__ == "__main__":
     non_transmitted_ids = extracted_ids - transmitted_ids
     summary["transmitted_observations"] = len(transmitted_ids)
     ## Count transmission events
-    summary["n_clusters"] = clusters["cluster_id"].unique().size   
+    summary["n_clusters"] = clusters["cluster_id"].unique().size
     summary["n_emergences"] = summary["n_clusters"] + len(non_transmitted_ids)
     ## Calculate events size stats
     cluster_sizes = clusters["cluster_id"].value_counts().values
-    summary["mean_cluster_size"] = np.mean(cluster_sizes)
-    summary["median_cluster_size"] = np.median(cluster_sizes)
-    summary["mode_cluster_size"] = np.max(cluster_sizes)
-    summary["sd_cluster_size"] = np.std(cluster_sizes)
+    summary["mean_cluster_size"] = float(np.mean(cluster_sizes))
+    summary["sd_cluster_size"] = float(np.std(cluster_sizes))
+    summary["median_cluster_size"] = float(np.median(cluster_sizes))
+    summary["mode_cluster_size"] = int(np.max(cluster_sizes))
 
     # Save summary
     with open(snakemake.output.table, "w") as fw:
