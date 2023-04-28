@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     # Print ID counts
     print(f"{len(extracted_ids)} extracted IDs")
-    print(f"{len(input_ids)} extracted IDs")
+    print(f"{len(input_ids)} total IDs")
 
     # Compose summary
     summary = {}
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     summary["mean_cluster_size"] = float(np.mean(cluster_sizes))
     summary["sd_cluster_size"] = float(np.std(cluster_sizes))
     summary["median_cluster_size"] = float(np.median(cluster_sizes))
-    summary["mode_cluster_size"] = int(np.max(cluster_sizes))
+    summary["mode_cluster_size"] = int(np.max(cluster_sizes)) if len(cluster_sizes) > 1 else np.nan
 
     # Save summary
     with open(snakemake.output.table, "w") as fw:
