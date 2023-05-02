@@ -12,7 +12,7 @@ and results will be placed in a subdirectory inside `OUTPUT_DIR` (default: `outp
 ## Dependencies
 
 This pipeline requires `conda` and `snakemake`. The rest of dependencies are
-defined in `sm/*_env.yaml` files and should be automatically installed in the `.snakemake`
+defined in `workflow/envs/*.yaml` files and should be automatically installed in the `.snakemake`
 directory upon execution.
 
 
@@ -24,13 +24,13 @@ Command line (with 4 cores):
 snakemake --use-conda -c 4
 ```
 
-You can override the default configuration in `sm/config.yaml` like this:
+You can override the default configuration in `config/config.yaml` like this:
 
 ```bash
 snakemake --use-conda -c 4 --config ALIGNED_FULL_FASTA="my_full.aligned.fasta" OUTPUT_DIR="my_output_dir"
 ```
 
-Run defalult batch job with slurm (7 days tops):
+Run defalult batch job with slurm (15 days tops):
 
 ```bash
 sbatch run-slurm.sh
