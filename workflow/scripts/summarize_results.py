@@ -3,8 +3,10 @@
 
 import json
 from pathlib import Path
+
 import pandas as pd
 import numpy as np
+from scipy import stats as st
 
 
 if __name__ == "__main__":
@@ -36,7 +38,7 @@ if __name__ == "__main__":
     summary["mean_cluster_size"] = float(np.mean(cluster_sizes))
     summary["sd_cluster_size"] = float(np.std(cluster_sizes))
     summary["median_cluster_size"] = float(np.median(cluster_sizes))
-    summary["mode_cluster_size"] = int(np.max(cluster_sizes)) if len(cluster_sizes) > 1 else np.nan
+    summary["mode_cluster_size"] = st.mode(cluster_sizes, keepdims=False).mode
 
     # Save summary
     with open(snakemake.output.table, "w") as fw:
