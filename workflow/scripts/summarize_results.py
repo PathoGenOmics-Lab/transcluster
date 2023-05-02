@@ -38,7 +38,7 @@ if __name__ == "__main__":
     summary["mean_cluster_size"] = float(np.mean(cluster_sizes))
     summary["sd_cluster_size"] = float(np.std(cluster_sizes))
     summary["median_cluster_size"] = float(np.median(cluster_sizes))
-    summary["mode_cluster_size"] = st.mode(cluster_sizes, keepdims=False).mode
+    summary["mode_cluster_size"] = st.mode(cluster_sizes, keepdims=False).mode.item()
 
     # Save summary
     with open(snakemake.output.table, "w") as fw:
