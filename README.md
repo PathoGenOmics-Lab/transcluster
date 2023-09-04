@@ -1,67 +1,89 @@
 # transcluster
 
+[![Snakemake](https://img.shields.io/badge/snakemake-≥6.9-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
+
 A Snakemake pipeline to find SARS-CoV-2 clusters in a reference phylogeny.
 
-It requires an `INPUT_DIR` (default: `input/`) containing at least one `.txt` file
-with a list of record IDs. Records will be extracted from `ALIGNED_FULL_FASTA`
-and placed on `REFERENCE_TREE`. Then, the pipeline will look for transmission clusters
-using a BFS approach. Each ID list will be evaluated separately, possibly in parallel,
-and results will be placed in a subdirectory inside `OUTPUT_DIR` (default: `output/`).
+It requires an input directory (`INPUT_DIR` parameter, default: `input/`) containing at least
+one `.txt` file with a list of record IDs (one per line). Each ID list is evaluated
+separately, possibly in parallel.
+Thus, records listed in a given list of samples are extracted from a FASTA file
+containing an aligned sequence dataset (provided through the `ALIGNED_FULL_FASTA` parameter)
+and placed on a reference phylogeny in Newick format (`REFERENCE_TREE`parameter ). Then, the
+pipeline looks for transmission clusters using a breadth-first search approach, skipping
+clades that do not conform to the parametrized clustering criteria (`MIN_SIZE` and `MIN_PROP`
+parameters, default: ≥2 members and ≥90% proportion of target samples). Results are written
+to a subdirectory within the output directory (`OUTPUT_DIR` parameter, default: `output/`).
 
+All parameters have a default setting except for `ALIGNED_FULL_FASTA`, which must be provided
+by the user. Parameters can be set and overridden by modifying the [`config.yaml`](config/config.yaml)
+file or through the `--config` command line argument (see the
+[Snakemake docs](https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html#standard-configuration)).
 
-## Dependencies
-
-This pipeline requires `conda` and `snakemake`. The rest of dependencies are
-defined in `workflow/envs/*.yaml` files and should be automatically installed in the `.snakemake`
-directory upon execution.
-
+The pipeline can also leverage an HPC environment using SLURM.
 
 ## Usage
 
-Command line (with 4 cores):
+This pipeline requires `conda`/`mamba` and `snakemake`. The rest of dependencies are
+defined in [YAML environment files](workflow/envs) and can be automatically installed
+upon execution through the command line argument `--use-conda`.
+
+To run the pipeline with 4 cores:
 
 ```bash
 snakemake --use-conda -c 4
 ```
 
-You can override the default configuration in `config/config.yaml` like this:
-
-```bash
-snakemake --use-conda -c 4 --config ALIGNED_FULL_FASTA="my_full.aligned.fasta" OUTPUT_DIR="my_output_dir"
-```
-
-Run defalult batch job with slurm (15 days tops):
+To run a batch job with SLURM (defaults time limit: 15 days):
 
 ```bash
 sbatch run-slurm.sh
 ```
 
-
-## Some configuration details
+## Configuration parameters
 
 ### `REFERENCE_TREE`
 
-You can select a reference tree with all GISAID sequences up to a date (e.g. yyyy/mm/dd) by providing the following `REFERENCE_TREE_URL`:
+URL or path pointing to a reference phylogeny to place the target samples in.
 
+Select a reference tree with all GISAID sequences up to a date (e.g. YYYY/MM/DD) by providing the following `REFERENCE_TREE`:
+
+```url
+https://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/YYYY/MM/DD/public-YYYY-MM-DD.all.masked.pb.gz
 ```
-https://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/{yyyy}/{mm}/{dd}/public-{yyyy}-{mm}-{dd}.all.masked.pb.gz
-```
 
-You can also select a locally stored protobuf tree by providing its path.
-
-### `ALIGNED_FULL_FASTA`
-
-It must be aligned to `REFERENCE_FASTA`!
+Alternatively, select a locally stored tree in `.protobuf` format by providing its path.
 
 ### `PROBLEMATIC_VCF`
 
-You probably don't need to change it, but you may want to be more or less flexible regarding problematic sites.
-To do that, you can select a locally stored VCF with problematic sites by providing its path.
+Path or URL pointing to a VCF file containing problematic sites.
 
+### `ALIGNED_FULL_FASTA`
+
+Path for a aligned sequence dataset in FASTA format. For each set of target samples, sequences are sourced
+from this file according to their ID. Sequences must be aligned to `REFERENCE_FASTA`.
+
+### `REFERENCE_FASTA`
+
+Path to the reference sequence in FASTA format.
+
+### `INPUT_DIR` and `OUTPUT_DIR`
+
+Path to the input and output directories, respectively.
+
+### `MIN_PROP` and `MIN_SIZE`
+
+Threshold for cluster detections: the minimum proportion of target samples (from 0 to 1, inclusive)
+and the minimum number of samples within a cluster, respectively.
+
+### `SPACE_REPLACEMENT`
+
+A string used to replace spaces in FASTA records to avoid truncation of sequence descriptors during
+the analysis.
 
 ## Testing the pipeline
 
-To test the pipeline, run `test-local.sh`.
+The pipeline can be tested by running `test-local.sh`.
 
 Cluster search is the most time-consuming task. Run time should be heavily
 dependent on tree structure. Time is expected to increase somewhat linearly,

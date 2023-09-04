@@ -2,8 +2,6 @@ REFERENCE_TREE:
   "https://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/2022/06/15/public-2022-06-15.all.masked.pb.gz"
 PROBLEMATIC_VCF:
   "https://github.com/W-L/ProblematicSites_SARS-CoV2/raw/master/problematic_sites_sarsCov2.vcf"
-ALIGNED_FULL_FASTA:
-  "/storage/PGO/data/cvd/datasets/gisaid/20220615/nextalign/20220615.aligned.fasta"
 REFERENCE_FASTA:
   "data/reference.fasta"
 INPUT_DIR:
