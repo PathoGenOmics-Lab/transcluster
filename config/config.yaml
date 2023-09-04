@@ -10,5 +10,9 @@ INPUT_DIR:
   "input"
 OUTPUT_DIR:
   "output"
+MIN_PROP:
+  0.9
+MIN_SIZE:
+  2
 SPACE_REPLACEMENT:
   "__WS__"
