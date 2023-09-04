@@ -1,6 +1,7 @@
 # transcluster
 
-[![Snakemake](https://img.shields.io/badge/snakemake-≥6.9-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
+[![PGO badge](https://img.shields.io/badge/PathoGenOmics-Lab-yellow.svg)](https://pathogenomics.github.io/)
+[![Snakemake badge](https://img.shields.io/badge/snakemake-≥6.9-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
 
 A Snakemake pipeline to find SARS-CoV-2 clusters in a reference phylogeny.
 
@@ -40,13 +41,17 @@ To run a batch job with SLURM (defaults time limit: 15 days):
 sbatch run-slurm.sh
 ```
 
+Note that the `sbatch` options set in [`run-slurm.sh`](run-slurm.sh) and [`slurm.yaml`](config/slurm.yaml)
+might need to be modified to meet the user's needs depending on the particular cluster characteristics.
+
 ## Configuration parameters
 
 ### `REFERENCE_TREE`
 
 URL or path pointing to a reference phylogeny to place the target samples in.
 
-Select a reference tree with all GISAID sequences up to a date (e.g. YYYY/MM/DD) by providing the following `REFERENCE_TREE`:
+Select a reference tree with all GISAID sequences up to a date by providing the following `REFERENCE_TREE`
+(replace `YYYY`, `MM` and `DD` according to the desired threshold date):
 
 ```url
 https://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/YYYY/MM/DD/public-YYYY-MM-DD.all.masked.pb.gz
