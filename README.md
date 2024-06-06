@@ -2,7 +2,7 @@
 
 [![PGO badge](https://img.shields.io/badge/PathoGenOmics-Lab-yellow.svg)](https://pathogenomics.github.io/)
 [![Release](https://img.shields.io/github/release/PathoGenOmics-Lab/transcluster.svg)](https://github.com/PathoGenOmics-Lab/transcluster/releases)
-[![Snakemake badge](https://img.shields.io/badge/snakemake-≥6.9-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
+[![Snakemake badge](https://img.shields.io/badge/snakemake-≥8.12-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
 
 A Snakemake pipeline to find SARS-CoV-2 clusters in a reference phylogeny.
 

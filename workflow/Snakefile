@@ -43,6 +43,10 @@ rule get_problematic_vcf:
     shadow: "shallow"
     output:
         vcf_path = "data/problematic_sites_sarsCov2.vcf"
+    resources:
+        mem_mb = 2000,
+        runtime = 15
+    retries: 3
     run:
         if config["PROBLEMATIC_VCF"].startswith("https://"):
             download_file(config["PROBLEMATIC_VCF"], output.vcf_path)
@@ -55,6 +59,10 @@ rule get_reference_tree:
     shadow: "shallow"
     output:
         tree_path = "data/public.all.masked.pb.gz"
+    resources:
+        mem_mb = 2000,
+        runtime = 15
+    retries: 3
     run:
         if config["REFERENCE_TREE"].startswith("https://"):
             download_file(config["REFERENCE_TREE"], output.tree_path)
@@ -73,6 +81,9 @@ rule extract_records:
     output:
         fasta = OUTPUT_DIR/"{dataset}/sequences.aligned.fasta",
         extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv"
+    resources:
+        mem_mb = 16000,
+        runtime = 6 * 60
     script:
         "scripts/extract_records.py"
 
@@ -91,6 +102,9 @@ rule phylogenetic_placement:
         output_directory = "pp_out"  # if shadow == "shallow", it will be removed
     output:
         tree = OUTPUT_DIR/"{dataset}/tree.nwk"
+    resources:
+        mem_mb = 16000,
+        runtime = 24 * 60
     shell:
         """
         cat {params.reference_fasta} {input.new_samples} > input.fasta
@@ -109,6 +123,9 @@ rule build_phylo4:
         extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv"
     output:
         tree_p4 = OUTPUT_DIR/"{dataset}/phylo4.RData"
+    resources:
+        mem_mb = 16000,
+        runtime = 24 * 60
     script:
         "scripts/build_phylo4.R"
 
@@ -126,6 +143,10 @@ rule calculate_clusters:
         log_every_minutes = 15
     output:
         out_dir = directory(OUTPUT_DIR/"{dataset}/clusters")
+    resources:
+        mem_mb = 64000,
+        runtime = 15 * 24 * 60,
+        slurm_extra = "'--qos=long'"
     script:
         "scripts/phylo_clusters.R"
 
@@ -140,5 +161,8 @@ rule summarize_results:
         ids_file = INPUT_DIR/"{dataset}.txt"
     output:
         table = OUTPUT_DIR/"{dataset}/summary.json"
+    resources:
+        mem_mb = 4000,
+        runtime = 15
     script:
         "scripts/summarize_results.py"
