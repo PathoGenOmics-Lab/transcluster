@@ -114,7 +114,7 @@ rule build_phylo4:
 
 
 rule calculate_clusters:
-    threads: 32
+    threads: 1
     shadow: "shallow"
     conda: "envs/r.yaml"
     input:
@@ -122,7 +122,8 @@ rule calculate_clusters:
         extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv"
     params:
         min_prop = config["MIN_PROP"],
-        min_size = config["MIN_SIZE"]
+        min_size = config["MIN_SIZE"],
+        log_every_minutes = 15
     output:
         out_dir = directory(OUTPUT_DIR/"{dataset}/clusters")
     script:
