@@ -142,7 +142,8 @@ rule calculate_clusters:
         min_size = config["MIN_SIZE"],
         log_every_minutes = 15
     output:
-        out_dir = directory(OUTPUT_DIR/"{dataset}/clusters")
+        clusters = OUTPUT_DIR/"{dataset}/clusters/clusters.csv",
+        summary = OUTPUT_DIR/"{dataset}/clusters/cluster_summary.csv"
     resources:
         mem_mb = lambda wildcards, attempt: 64000 * attempt * 1.5,  # min 64GB
         runtime = 15 * 24 * 60,  # 15 days
@@ -157,7 +158,7 @@ rule summarize_results:
     shadow: "shallow"
     conda: "envs/tables.yaml"
     input:
-        cluster_dir = OUTPUT_DIR/"{dataset}/clusters",
+        clusters = OUTPUT_DIR/"{dataset}/clusters/clusters.csv",
         extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv",
         ids_file = INPUT_DIR/"{dataset}.txt"
     output:

@@ -12,7 +12,8 @@ library(doParallel)
 
 EXTRACTED.IDS <- snakemake@input[["extracted_ids"]]
 TREE.P4  <- snakemake@input[["tree_p4"]]
-OUT.DIR  <- snakemake@output[["out_dir"]]
+OUTPUT.CLUSTERS  <- snakemake@output[["clusters"]]
+OUTPUT.SUMMARY  <- snakemake@output[["summary"]]
 MIN.PROP <- snakemake@params[["min_prop"]]
 MIN.SIZE <- snakemake@params[["min_size"]]
 LOG_EVERY_MINUTES <- snakemake@params[["log_every_minutes"]]
@@ -145,9 +146,6 @@ log_threshold(INFO)
 
 log_info("Starting")
 
-log_info("Creating output directory")
-dir.create(OUT.DIR)
-
 log_info("Reading Phylo4 tree")
 load(TREE.P4)
 
@@ -176,9 +174,9 @@ if (length(cluster.nodes) == 0) {
 }
 
 log_info("Writing clusters")
-cluster.table %>% write_csv(glue("{OUT.DIR}/clusters.csv"))
+cluster.table %>% write_csv(OUTPUT.CLUSTERS)
 cluster.table %>%
   count(cluster_id) %>%
-  write_csv(glue("{OUT.DIR}/cluster_summary.csv"))
+  write_csv(OUTPUT.SUMMARY)
 
 log_info("All done")

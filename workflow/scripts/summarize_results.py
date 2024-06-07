@@ -12,8 +12,7 @@ from scipy import stats as st
 if __name__ == "__main__":
 
     # Read input files
-    clusters_path = Path(snakemake.input.cluster_dir) / "clusters.csv"
-    clusters = pd.read_csv(clusters_path)
+    clusters = pd.read_csv(snakemake.input.clusters)
     extracted_ids = set(pd.read_csv(snakemake.input.extracted_ids)["original_id"])
     with open(snakemake.input.ids_file) as f:
         input_ids = set(line.strip() for line in f)
