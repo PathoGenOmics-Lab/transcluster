@@ -144,9 +144,10 @@ rule calculate_clusters:
     output:
         out_dir = directory(OUTPUT_DIR/"{dataset}/clusters")
     resources:
-        mem_mb = 64000,
-        runtime = 15 * 24 * 60,
+        mem_mb = mem_mb = lambda wildcards, attempt: 64000 * attempt * 1.5,  # min 64GB
+        runtime = 15 * 24 * 60,  # 15 days
         slurm_extra = "'--qos=long'"
+    retries: 3
     script:
         "scripts/phylo_clusters.R"
 
