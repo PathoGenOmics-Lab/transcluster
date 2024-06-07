@@ -168,3 +168,25 @@ rule summarize_results:
         runtime = 15
     script:
         "scripts/summarize_results.py"
+
+
+rule build_haplotype_metadata:
+    threads: 1
+    conda: "envs/r.yaml"
+    input:
+        clusters = OUTPUT_DIR/"{dataset}/clusters/clusters.csv",
+        full_metadata = config["METADATA"]
+    params:
+        metadata_originalid_column = "Virus name",
+        metadata_id_column = "Accession ID",
+        metadata_date_column = "Collection date",
+        metadata_location_column = "Location",
+        metadata_gender_column = "Gender",
+        metadata_lineage_column = "Lineage",
+        metadata_age_column = "Patient age"
+    output:
+        metadata = OUTPUT_DIR/"{dataset}/metadata.csv"
+    resources:
+        mem_mb = 16000,
+        runtime = 2 * 60
+    script: "scripts/build_haplotype_metadata.R"
