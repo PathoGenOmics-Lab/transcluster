@@ -34,7 +34,7 @@ DATASETS = [path.stem for path in INPUT_DIR.glob("*.txt")]
 
 rule all:
     input:
-        expand(OUTPUT_DIR/"{dataset}/clusters", dataset=DATASETS),
+        expand(OUTPUT_DIR/"{dataset}/clusters/clusters.csv", dataset=DATASETS),
         expand(OUTPUT_DIR/"{dataset}/summary.json", dataset=DATASETS),
 
 
