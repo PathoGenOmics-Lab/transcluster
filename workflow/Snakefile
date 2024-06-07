@@ -144,7 +144,7 @@ rule calculate_clusters:
     output:
         out_dir = directory(OUTPUT_DIR/"{dataset}/clusters")
     resources:
-        mem_mb = mem_mb = lambda wildcards, attempt: 64000 * attempt * 1.5,  # min 64GB
+        mem_mb = lambda wildcards, attempt: 64000 * attempt * 1.5,  # min 64GB
         runtime = 15 * 24 * 60,  # 15 days
         slurm_extra = "'--qos=long'"
     retries: 3
@@ -157,7 +157,7 @@ rule summarize_results:
     shadow: "shallow"
     conda: "envs/tables.yaml"
     input:
-        cluster_dir = directory(OUTPUT_DIR/"{dataset}/clusters"),
+        cluster_dir = OUTPUT_DIR/"{dataset}/clusters",
         extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv",
         ids_file = INPUT_DIR/"{dataset}.txt"
     output:
