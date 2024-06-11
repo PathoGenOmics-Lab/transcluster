@@ -37,7 +37,9 @@ rule all:
         expand(OUTPUT_DIR/"{dataset}/clusters/clusters.csv", dataset=DATASETS),
         expand(OUTPUT_DIR/"{dataset}/summary.json", dataset=DATASETS),
         OUTPUT_DIR/"{dataset}/fitness/0d/estimated_fitness.csv",
-        OUTPUT_DIR/"{dataset}/fitness/7d/estimated_fitness.csv"
+        OUTPUT_DIR/"{dataset}/fitness/7d/estimated_fitness.csv",
+        OUTPUT_DIR/"{dataset}/fitness/0d/report.svg",
+        OUTPUT_DIR/"{dataset}/fitness/7d/report.svg"
 
 
 rule get_problematic_vcf:
@@ -209,3 +211,16 @@ rule estimate_fitness:
     output:
         fitness = OUTPUT_DIR/"{dataset}/fitness/{days_padding}d/estimated_fitness.csv"
     script: "scripts/estimated_fitness.py"
+
+
+rule report_estimated_fitness:
+    threads: 1
+    conda: "envs/report.yaml"
+    input:
+        fitness = OUTPUT_DIR/"{dataset}/{days_padding}d/estimated_fitness.csv"
+    params:
+        width_mm = 320, height_mm = 240
+    output:
+        report = OUTPUT_DIR/"{dataset}/fitness/{days_padding}d/report.svg",
+        summary = OUTPUT_DIR/"{dataset}/fitness/{days_padding}d/summary.csv",
+    script: "scripts/report_estimated_fitness.R"
