@@ -14,3 +14,12 @@ MIN_SIZE:
   2
 SPACE_REPLACEMENT:
   "__WS__"
+METADATA_COLS:
+  FULL_METADATA:
+    ORIGINAL_ID: "Virus name"
+    UNIQUE_ID: "Accession ID"
+    DATE: "Collection date"
+    LOCATION: "Location"
+    GENDER: "Gender"
+    LINEAGE: "Lineage"
+    AGE: "Patient age"

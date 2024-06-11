@@ -177,16 +177,36 @@ rule build_haplotype_metadata:
         clusters = OUTPUT_DIR/"{dataset}/clusters/clusters.csv",
         full_metadata = config["METADATA"]
     params:
-        metadata_originalid_column = "Virus name",
-        metadata_id_column = "Accession ID",
-        metadata_date_column = "Collection date",
-        metadata_location_column = "Location",
-        metadata_gender_column = "Gender",
-        metadata_lineage_column = "Lineage",
-        metadata_age_column = "Patient age"
+        metadata_originalid_column = config["METADATA_COLS"]["FULL_METADATA"]["ORIGINAL_ID"],
+        metadata_id_column = config["METADATA_COLS"]["FULL_METADATA"]["UNIQUE_ID"],
+        metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
+        metadata_location_column = config["METADATA_COLS"]["FULL_METADATA"]["LOCATION"],
+        metadata_gender_column = config["METADATA_COLS"]["FULL_METADATA"]["GENDER"],
+        metadata_lineage_column = config["METADATA_COLS"]["FULL_METADATA"]["LINEAGE"],
+        metadata_age_column = config["METADATA_COLS"]["FULL_METADATA"]["AGE"]
     output:
         metadata = OUTPUT_DIR/"{dataset}/metadata.csv"
     resources:
         mem_mb = 16000,
         runtime = 2 * 60
     script: "scripts/build_haplotype_metadata.R"
+
+
+rule estimate_fitness:
+    threads: 1
+    input:
+        full_metadata = config["METADATA"],
+        haplotype_metadata = OUTPUT_DIR/"{dataset}/metadata.csv"
+    params:
+        days_padding = 7,
+        metadata_id_column = config["METADATA_COLS"]["FULL_METADATA"]["UNIQUE_ID"],
+        metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
+        metadata_location_column = config["METADATA_COLS"]["FULL_METADATA"]["LOCATION"],
+        # TODO: revisar estas
+        clusters_id_column = config["METADATA_COLS"]["FULL_METADATA"]["UNIQUE_ID"],
+        clusters_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
+        clusters_location_column = config["METADATA_COLS"]["FULL_METADATA"]["LOCATION"]
+    output:
+        fitness = OUTPUT_DIR/"{dataset}/estimated_fitness.csv",
+        formatted_metadata = OUTPUT_DIR/"{dataset}/metadata.fmt.csv"
+    script: "scripts/estimated_fitness.py"
