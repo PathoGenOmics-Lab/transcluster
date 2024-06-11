@@ -18,7 +18,7 @@ import pandas as pd
 
 
 # Other settings
-DAYS_PADDING = pd.Timedelta(days=snakemake.params.days_padding)
+DAYS_PADDING = pd.Timedelta(days=int(snakemake.wildcards.days_padding))
 
 # Cluster detection analysis columns (hard-coded in scripts)
 ANALYSIS_HAPLOTYPE_COL  = "Haplotype"

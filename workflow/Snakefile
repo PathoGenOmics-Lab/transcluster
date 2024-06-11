@@ -36,6 +36,8 @@ rule all:
     input:
         expand(OUTPUT_DIR/"{dataset}/clusters/clusters.csv", dataset=DATASETS),
         expand(OUTPUT_DIR/"{dataset}/summary.json", dataset=DATASETS),
+        OUTPUT_DIR/"{dataset}/fitness/0d/estimated_fitness.csv",
+        OUTPUT_DIR/"{dataset}/fitness/7d/estimated_fitness.csv"
 
 
 rule get_problematic_vcf:
@@ -198,7 +200,6 @@ rule estimate_fitness:
         full_metadata = config["METADATA"],
         haplotype_metadata = OUTPUT_DIR/"{dataset}/metadata.csv"
     params:
-        days_padding = 7,
         metadata_id_column = config["METADATA_COLS"]["FULL_METADATA"]["UNIQUE_ID"],
         metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
         metadata_location_column = config["METADATA_COLS"]["FULL_METADATA"]["LOCATION"],
@@ -206,6 +207,5 @@ rule estimate_fitness:
         clusters_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
         clusters_location_column = config["METADATA_COLS"]["FULL_METADATA"]["LOCATION"]
     output:
-        fitness = OUTPUT_DIR/"{dataset}/estimated_fitness.csv",
-        formatted_metadata = OUTPUT_DIR/"{dataset}/metadata.fmt.csv"
+        fitness = OUTPUT_DIR/"{dataset}/fitness/{days_padding}d/estimated_fitness.csv"
     script: "scripts/estimated_fitness.py"
