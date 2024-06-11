@@ -147,7 +147,7 @@ rule calculate_clusters:
         clusters = OUTPUT_DIR/"{dataset}/clusters/clusters.csv",
         summary = OUTPUT_DIR/"{dataset}/clusters/cluster_summary.csv"
     resources:
-        mem_mb = lambda wildcards, attempt: 64000 * attempt * 1.5,  # min 64GB
+        mem_mb = lambda wildcards, attempt: 16000 * attempt,  # min 16GB
         runtime = 15 * 24 * 60,  # 15 days
         slurm_extra = "'--qos=long'"
     retries: 3
