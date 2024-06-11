@@ -20,17 +20,9 @@ import pandas as pd
 # Other settings
 DAYS_PADDING = pd.Timedelta(days=snakemake.params.days_padding)
 
-# Sample full metadata columns
-FULL_METADATA_PATH         = snakemake.input.full_metadata
-FULL_METADATA_ID_COL       = snakemake.params.metadata_id_column
-FULL_METADATA_DATE_COL     = snakemake.params.metadata_date_column
-FULL_METADATA_LOCATION_COL = snakemake.params.metadata_location_column
-
-# Cluster detection analysis columns
-ANALYSIS_DATE_COL       = snakemake.params.clusters_date_column
-ANALYSIS_LOCATION_COL   = snakemake.params.clusters_location_column
-ANALYSIS_HAPLOTYPE_COL  = "Haplotype"   # hard-coded in scripts
-ANALYSIS_CLUSTER_ID_COL = "cluster_id"  # hard-coded in scripts
+# Cluster detection analysis columns (hard-coded in scripts)
+ANALYSIS_HAPLOTYPE_COL  = "Haplotype"
+ANALYSIS_CLUSTER_ID_COL = "cluster_id"
 
 
 class CountryBound:
@@ -62,7 +54,7 @@ def count_background_samples_slicing(metadata: pd.DataFrame, bounds: List[Countr
             (min_bg_date < metadata["Date"]) & \
             (metadata["Date"] < max_bg_date) & \
             (metadata["Country"] == bound.country)
-        ][FULL_METADATA_ID_COL].unique()
+        ][snakemake.params.metadata_id_column].unique()
         unique_identifiers.update(new_ids)
         logging.debug(f"{len(new_ids)} samples in {bound.country} from {min_bg_date.date()} to {max_bg_date.date()}")
         if len(new_ids) == 0:
@@ -129,12 +121,12 @@ def analyze_cluster_results(cluster_data: pd.DataFrame, full_metadata: pd.DataFr
 def read_cluster_analysis(path: str, sep: str) -> pd.DataFrame:
     df = pd.read_csv(path, sep=sep, dtype={ANALYSIS_CLUSTER_ID_COL: "Int64"})
     # Get countries
-    df["Country"] = extract_country(df, ANALYSIS_LOCATION_COL)
+    df["Country"] = extract_country(df, snakemake.params.clusters_location_column)
     # Set dates with year and month to the middle of the month and remove dates with only year
-    date_items = df[ANALYSIS_DATE_COL].str.split("-").str.len()
-    df.loc[date_items == 1, ANALYSIS_DATE_COL] = pd.NA
-    df.loc[date_items == 2, ANALYSIS_DATE_COL] = df[ANALYSIS_DATE_COL] + "-15"
-    df["Date"] = pd.to_datetime(df[ANALYSIS_DATE_COL], errors="raise")
+    date_items = df[snakemake.params.clusters_date_column].str.split("-").str.len()
+    df.loc[date_items == 1, snakemake.params.clusters_date_column] = pd.NA
+    df.loc[date_items == 2, snakemake.params.clusters_date_column] = df[snakemake.params.clusters_date_column] + "-15"
+    df["Date"] = pd.to_datetime(df[snakemake.params.clusters_date_column], errors="raise")
     return df
 
 
@@ -147,18 +139,18 @@ if __name__ == "__main__":
     clusters = read_cluster_analysis(snakemake.input.haplotype_metadata, sep=",")
 
     logging.info("Reading full metadata")
-    metadata_sep = "," if FULL_METADATA_PATH.endswith(".csv") else "\t"
+    metadata_sep = "," if snakemake.input.full_metadata.endswith(".csv") else "\t"
     metadata = pd.read_csv(
-        FULL_METADATA_PATH,
-        sep=metadata_sep, usecols=[FULL_METADATA_ID_COL, FULL_METADATA_DATE_COL, FULL_METADATA_LOCATION_COL]
+        snakemake.input.full_metadata,
+        sep=metadata_sep, usecols=[snakemake.params.metadata_id_column, snakemake.params.metadata_date_column, snakemake.params.metadata_location_column]
     )
-    metadata["Country"] = extract_country(metadata, FULL_METADATA_LOCATION_COL)
+    metadata["Country"] = extract_country(metadata, snakemake.params.metadata_location_column)
 
     # Set dates with year and month to the middle of the month and remove dates with only year
-    date_items = metadata[FULL_METADATA_DATE_COL].str.split("-").str.len()
-    metadata.loc[date_items == 1, FULL_METADATA_DATE_COL] = pd.NA
-    metadata.loc[date_items == 2, FULL_METADATA_DATE_COL] = metadata[FULL_METADATA_DATE_COL] + "-15"
-    metadata["Date"] = pd.to_datetime(metadata[FULL_METADATA_DATE_COL], errors="raise")
+    date_items = metadata[snakemake.params.metadata_date_column].str.split("-").str.len()
+    metadata.loc[date_items == 1, snakemake.params.metadata_date_column] = pd.NA
+    metadata.loc[date_items == 2, snakemake.params.metadata_date_column] = metadata[snakemake.params.metadata_date_column] + "-15"
+    metadata["Date"] = pd.to_datetime(metadata[snakemake.params.metadata_date_column], errors="raise")
 
     # Analyze results
     logging.info("Estimating fitness")
