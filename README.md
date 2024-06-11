@@ -66,8 +66,12 @@ Path or URL pointing to a VCF file containing problematic sites.
 
 ### `ALIGNED_FULL_FASTA`
 
-Path for a aligned sequence dataset in FASTA format. For each set of target samples, sequences are sourced
+Path to the aligned sequence dataset in FASTA format. For each set of target samples, sequences are sourced
 from this file according to their ID. Sequences must be aligned to `REFERENCE_FASTA`.
+
+### `METADATA`
+
+Path to the GISAID metadata of the input sequences in CSV format.
 
 ### `REFERENCE_FASTA`
 
