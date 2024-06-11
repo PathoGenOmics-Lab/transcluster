@@ -18,9 +18,11 @@ log_info("Reading data")
 estimated.fitness <- read_csv(snakemake@input[["fitness"]])
 
 log_info("Plotting")
-estimated.fitness %>%
+plot.data <- estimated.fitness %>%
   rename(Adding = fitness_adding, Slicing = fitness_slicing) %>%
-  pivot_longer(cols = c(Adding, Slicing)) %>%
+  pivot_longer(cols = c(Adding, Slicing))
+
+plot.data %>%
   ggplot(aes(Haplotype, value, color = name)) +
     geom_boxplot() +
     scale_y_log10() +
@@ -42,6 +44,9 @@ ggsave(
   height = snakemake@params[["height_mm"]],
   units = "mm"
 )
+
+log_info("Writing report data")
+plot.data %>% write_csv(snakemake@output[["report_data"]])
 
 log_info("Writing summary")
 estimated.fitness %>%

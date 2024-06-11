@@ -222,5 +222,6 @@ rule report_estimated_fitness:
         width_mm = 320, height_mm = 240
     output:
         report = OUTPUT_DIR/"{dataset}/fitness/{days_padding}d/report.svg",
+        report_data = OUTPUT_DIR/"{dataset}/fitness/{days_padding}d/report.csv",
         summary = OUTPUT_DIR/"{dataset}/fitness/{days_padding}d/summary.csv",
     script: "scripts/report_estimated_fitness.R"
