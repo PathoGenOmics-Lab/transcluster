@@ -54,6 +54,11 @@ with open(snakemake.output.extracted_ids, "w") as fw:
     for original_id, modified_id in id_equivalence.items():
         fw.write(f"{original_id},{modified_id}\n")
 
+# Write list of targets as appearing on the tree
+with open(snakemake.output.targets, "w") as fw:
+    for modified_id in id_equivalence.values():
+        fw.write(f"{modified_id}\n")
+
 if n_records_written != n_provided_ids:
     print(f"The following records were not found in '{snakemake.params.full_fasta}':")
     print(*set.symmetric_difference(provided_ids, set(ori for ori,mod in id_equivalence.items())), sep="\n")

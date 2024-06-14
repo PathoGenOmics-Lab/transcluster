@@ -1,6 +1,5 @@
 #!/usr/bin/env R
 
-library(glue)
 library(phylobase)
 library(tidyverse)
 library(ape)
@@ -33,7 +32,12 @@ log_info("Trimmed tree has {length(tree$tip.label)} tips")
 log_info("Converting to phylo4")
 tree.p4 <- as(tree, "phylo4")
 
+log_info("Converting to dataframe")
+tree.p4.df <- as(tree.p4, "data.frame")
+
 log_info("Saving phylo4 tree")
-save(tree.p4, file = OUT.FILE)
+tree.p4.df %>%
+    rename(nodetype = node.type, edgelength = edge.length) %>%
+    write_csv(OUT.FILE)
 
 log_info("Finished")

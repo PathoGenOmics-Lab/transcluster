@@ -34,12 +34,12 @@ DATASETS = [path.stem for path in INPUT_DIR.glob("*.txt")]
 
 rule all:
     input:
-        expand(OUTPUT_DIR/"{dataset}/clusters/clusters.csv", dataset=DATASETS),
+        expand(OUTPUT_DIR/"{dataset}/clusters.csv", dataset=DATASETS),
         expand(OUTPUT_DIR/"{dataset}/summary.json", dataset=DATASETS),
-        OUTPUT_DIR/"{dataset}/fitness/0d/estimated_fitness.csv",
-        OUTPUT_DIR/"{dataset}/fitness/7d/estimated_fitness.csv",
-        OUTPUT_DIR/"{dataset}/fitness/0d/report.svg",
-        OUTPUT_DIR/"{dataset}/fitness/7d/report.svg"
+        expand(OUTPUT_DIR/"{dataset}/fitness/0d/estimated_fitness.csv", dataset=DATASETS),
+        expand(OUTPUT_DIR/"{dataset}/fitness/7d/estimated_fitness.csv", dataset=DATASETS),
+        expand(OUTPUT_DIR/"{dataset}/fitness/0d/report.svg", dataset=DATASETS),
+        expand(OUTPUT_DIR/"{dataset}/fitness/7d/report.svg", dataset=DATASETS)
 
 
 rule get_problematic_vcf:
@@ -84,10 +84,11 @@ rule extract_records:
         full_fasta = config["ALIGNED_FULL_FASTA"]
     output:
         fasta = OUTPUT_DIR/"{dataset}/sequences.aligned.fasta",
-        extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv"
+        extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv",
+        targets = OUTPUT_DIR/"{dataset}/targets.txt"
     resources:
         mem_mb = 16000,
-        runtime = 6 * 60
+        runtime = 60
     script:
         "scripts/extract_records.py"
 
@@ -126,7 +127,7 @@ rule build_phylo4:
         tree = OUTPUT_DIR/"{dataset}/tree.nwk",
         extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv"
     output:
-        tree_p4 = OUTPUT_DIR/"{dataset}/phylo4.RData"
+        tree_p4 = OUTPUT_DIR/"{dataset}/tree.p4.csv"
     resources:
         mem_mb = 16000,
         runtime = 24 * 60
@@ -137,24 +138,20 @@ rule build_phylo4:
 rule calculate_clusters:
     threads: 1
     shadow: "shallow"
-    conda: "envs/r.yaml"
+    conda: "envs/tcfinder.yaml"
     input:
-        tree_p4 = OUTPUT_DIR/"{dataset}/phylo4.RData",
-        extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv"
+        tree_p4 = OUTPUT_DIR/"{dataset}/tree.p4.csv",
+        targets = OUTPUT_DIR/"{dataset}/targets.txt"
     params:
         min_prop = config["MIN_PROP"],
-        min_size = config["MIN_SIZE"],
-        log_every_minutes = 15
+        min_size = config["MIN_SIZE"]
     output:
-        clusters = OUTPUT_DIR/"{dataset}/clusters/clusters.csv",
-        summary = OUTPUT_DIR/"{dataset}/clusters/cluster_summary.csv"
+        clusters = OUTPUT_DIR/"{dataset}/clusters.csv"
     resources:
-        mem_mb = lambda wildcards, attempt: 16000 * attempt,  # min 16GB
-        runtime = 15 * 24 * 60,  # 15 days
-        slurm_extra = "'--qos=long'"
+        mem_mb = lambda wildcards, attempt: 8000 * attempt,
+        runtime = 12 * 60
     retries: 3
-    script:
-        "scripts/phylo_clusters.R"
+    shell: "tcfinder -i {input.tree_p4} -t {input.targets} -o {output.clusters} -p {params.min_prop} -s {params.min_size}"
 
 
 rule summarize_results:
@@ -162,7 +159,7 @@ rule summarize_results:
     shadow: "shallow"
     conda: "envs/tables.yaml"
     input:
-        clusters = OUTPUT_DIR/"{dataset}/clusters/clusters.csv",
+        clusters = OUTPUT_DIR/"{dataset}/clusters.csv",
         extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv",
         ids_file = INPUT_DIR/"{dataset}.txt"
     output:
@@ -178,7 +175,7 @@ rule build_haplotype_metadata:
     threads: 1
     conda: "envs/r.yaml"
     input:
-        clusters = OUTPUT_DIR/"{dataset}/clusters/clusters.csv",
+        clusters = OUTPUT_DIR/"{dataset}/clusters.csv",
         full_metadata = config["METADATA"]
     params:
         metadata_originalid_column = config["METADATA_COLS"]["FULL_METADATA"]["ORIGINAL_ID"],
@@ -217,7 +214,7 @@ rule report_estimated_fitness:
     threads: 1
     conda: "envs/report.yaml"
     input:
-        fitness = OUTPUT_DIR/"{dataset}/{days_padding}d/estimated_fitness.csv"
+        fitness = OUTPUT_DIR/"{dataset}/fitness/{days_padding}d/estimated_fitness.csv"
     params:
         width_mm = 320, height_mm = 240
     output:
