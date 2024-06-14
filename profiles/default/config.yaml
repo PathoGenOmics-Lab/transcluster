@@ -1,0 +1,3 @@
+executor: local
+use-conda: True
+restart-times: 0
