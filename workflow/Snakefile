@@ -87,14 +87,14 @@ rule extract_records:
         extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv",
         targets = OUTPUT_DIR/"{dataset}/targets.txt"
     resources:
-        mem_mb = 16000,
+        mem_mb = 4000,
         runtime = 60
     script:
         "scripts/extract_records.py"
 
 
 rule phylogenetic_placement:
-    threads: 32
+    threads: 8
     shadow: "shallow"
     conda: "envs/usher.yaml"
     input:
@@ -109,7 +109,7 @@ rule phylogenetic_placement:
         tree = OUTPUT_DIR/"{dataset}/tree.nwk"
     resources:
         mem_mb = 16000,
-        runtime = 24 * 60
+        runtime = 12 * 60
     shell:
         """
         cat {params.reference_fasta} {input.new_samples} > input.fasta
@@ -130,7 +130,7 @@ rule build_phylo4:
         tree_p4 = OUTPUT_DIR/"{dataset}/tree.p4.csv"
     resources:
         mem_mb = 16000,
-        runtime = 24 * 60
+        runtime = 12 * 60
     script:
         "scripts/build_phylo4.R"
 
