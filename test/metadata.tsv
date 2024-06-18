@@ -1,0 +1,19 @@
+Virus name,Type,Accession ID,Collection date,Location,Additional location information,Sequence length,Host,Patient age,Gender,Clade,Pango lineage,Pangolin version,Variant,AA Substitutions,Submission date,Is reference?,Is complete?,Is high coverage?,Is low coverage?,N-Content,GC-Content,Original GISAID virus name
+seq1,,seq1,2022-04-26,Europe / Spain / Comunitat Valenciana / Valencia,,,Human,28,Female,GRA,BA.2.3,,Omicron,,,,,,,,,hCoV-19/Spain/VC-FISABIO-107489/2022
+seq2,,seq1,2022-04-26,Europe / Spain / Comunitat Valenciana / Valencia,,,Human,28,Female,GRA,BA.2.3,,Omicron,,,,,,,,,hCoV-19/Spain/VC-FISABIO-107489/2022
+seq3,,seq1,2022-04-26,Europe / Spain / Comunitat Valenciana / Valencia,,,Human,28,Female,GRA,BA.2.3,,Omicron,,,,,,,,,hCoV-19/Spain/VC-FISABIO-107489/2022
+seq4 with spaces,,seq1,2022-04-26,Europe / Spain / Comunitat Valenciana / Valencia,,,Human,28,Female,GRA,BA.2.3,,Omicron,,,,,,,,,hCoV-19/Spain/VC-FISABIO-107489/2022
+seq5,,seq5,2022-04-23,Europe / Spain / Comunitat Valenciana / Valencia,,,Human,81,Male,GRA,BA.2,,Omicron,,,,,,,,,hCoV-19/Spain/VC-FISABIO-107414/2022
+seq6,,seq6,2022-04-23,Europe / Spain / Comunitat Valenciana / Valencia,,,Human,81,Male,GRA,BA.2,,Omicron,,,,,,,,,hCoV-19/Spain/VC-FISABIO-107414/2022
+seq7,,seq7,2022-04-23,Europe / Spain / Comunitat Valenciana / Valencia,,,Human,81,Male,GRA,BA.2,,Omicron,,,,,,,,,hCoV-19/Spain/VC-FISABIO-107414/2022
+seq8 with spaces,,seq8 with spaces,2022-04-23,Europe / Spain / Comunitat Valenciana / Valencia,,,Human,81,Male,GRA,BA.2.3,,Omicron,,,,,,,,,hCoV-19/Spain/VC-FISABIO-107414/2022
+seq_background_1,,seq_background_1,2022-04-20,Europe / Spain / Comunitat Valenciana / Valencia,,,Human,1,Female,GRA,BA.2.3,,Omicron,,,,,,,,,
+seq_background_2,,seq_background_2,2022-04-21,Europe / Spain / Comunitat Valenciana / Valencia,,,Human,25,Female,GRA,BA.2.3,,Omicron,,,,,,,,,
+seq_background_3,,seq_background_3,2022-04-22,Europe / Spain / Comunitat Valenciana / Valencia,,,Human,50,Female,GRA,BA.2.3,,Omicron,,,,,,,,,
+seq_background_4,,seq_background_4,2022-04-23,Europe / Spain / Comunitat Valenciana / Valencia,,,Human,75,Female,GRA,BA.2.3,,Omicron,,,,,,,,,
+seq_background_5,,seq_background_5,2022-04-24,Europe / Spain / Comunitat Valenciana / Valencia,,,Human,81,Male,GRA,BA.2,,Omicron,,,,,,,,,
+seq_background_6,,seq_background_6,2022-04-25,Europe / Spain / Comunitat Valenciana / Valencia,,,Human,81,Male,GRA,BA.2,,Omicron,,,,,,,,,
+seq_background_7,,seq_background_7,2022-04-26,Europe / Spain / Comunitat Valenciana / Valencia,,,Human,81,Male,GRA,BA.2,,Omicron,,,,,,,,,
+seq_background_8,,seq_background_8,2022-04-27,Europe / Spain / Comunitat Valenciana / Valencia,,,Human,81,Male,GRA,BA.2,,Omicron,,,,,,,,,
+seq_background_9,,seq_background_9,2022-04-28,Europe / Spain / Comunitat Valenciana / Valencia,,,Human,81,Male,GRA,BA.2,,Omicron,,,,,,,,,
+seq_background_10,,seq_background_10,2022-04-29,Europe / Spain / Comunitat Valenciana / Valencia,,,Human,81,Male,GRA,BA.2,,Omicron,,,,,,,,,
