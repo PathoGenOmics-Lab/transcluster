@@ -94,8 +94,3 @@ the analysis.
 ## Testing the pipeline
 
 The pipeline can be tested by running `test-local.sh`.
-
-Cluster search is the most time-consuming task. Run time should be heavily
-dependent on tree structure. Time is expected to increase somewhat linearly,
-but the diversity of the target set of sequences will be a major factor too.
-Expect higher run times with more diverse sets.
