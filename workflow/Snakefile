@@ -36,10 +36,8 @@ rule all:
     input:
         expand(OUTPUT_DIR/"{dataset}/clusters.csv", dataset=DATASETS),
         expand(OUTPUT_DIR/"{dataset}/summary.json", dataset=DATASETS),
-        expand(OUTPUT_DIR/"{dataset}/fitness/0d/estimated_fitness.csv", dataset=DATASETS),
-        expand(OUTPUT_DIR/"{dataset}/fitness/7d/estimated_fitness.csv", dataset=DATASETS),
-        expand(OUTPUT_DIR/"{dataset}/fitness/0d/report.svg", dataset=DATASETS),
-        expand(OUTPUT_DIR/"{dataset}/fitness/7d/report.svg", dataset=DATASETS)
+        expand(OUTPUT_DIR/"{dataset}/fitness/{days}d/estimated_fitness.csv", dataset=DATASETS, days=config["FITNESS_PADDING_DAYS"]),
+        expand(OUTPUT_DIR/"summary/fitness/{days}d/report.svg", days=config["FITNESS_PADDING_DAYS"])
 
 
 rule get_problematic_vcf:
@@ -122,7 +120,7 @@ rule phylogenetic_placement:
 rule build_phylo4:
     threads: 1
     shadow: "shallow"
-    conda: "envs/r.yaml"
+    conda: "envs/trees.yaml"
     input:
         tree = OUTPUT_DIR/"{dataset}/tree.nwk",
         extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv"
@@ -173,9 +171,10 @@ rule summarize_results:
 
 rule build_haplotype_metadata:
     threads: 1
-    conda: "envs/r.yaml"
+    conda: "envs/trees.yaml"
     input:
         clusters = OUTPUT_DIR/"{dataset}/clusters.csv",
+        extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv",
         full_metadata = config["METADATA"]
     params:
         metadata_originalid_column = config["METADATA_COLS"]["FULL_METADATA"]["ORIGINAL_ID"],
@@ -207,18 +206,18 @@ rule estimate_fitness:
         clusters_location_column = config["METADATA_COLS"]["FULL_METADATA"]["LOCATION"]
     output:
         fitness = OUTPUT_DIR/"{dataset}/fitness/{days_padding}d/estimated_fitness.csv"
-    script: "scripts/estimated_fitness.py"
+    script: "scripts/estimate_fitness.py"
 
 
 rule report_estimated_fitness:
     threads: 1
     conda: "envs/report.yaml"
     input:
-        fitness = OUTPUT_DIR/"{dataset}/fitness/{days_padding}d/estimated_fitness.csv"
+        fitnesses = expand(OUTPUT_DIR/"{dataset}/fitness/{{days}}d/estimated_fitness.csv", dataset=DATASETS)
     params:
         width_mm = 320, height_mm = 240
     output:
-        report = OUTPUT_DIR/"{dataset}/fitness/{days_padding}d/report.svg",
-        report_data = OUTPUT_DIR/"{dataset}/fitness/{days_padding}d/report.csv",
-        summary = OUTPUT_DIR/"{dataset}/fitness/{days_padding}d/summary.csv",
+        report = OUTPUT_DIR/"summary/fitness/{days}d/report.svg",
+        report_data = OUTPUT_DIR/"summary/fitness/{days}d/report.csv",
+        summary = OUTPUT_DIR/"summary/fitness/{days}d/summary.csv",
     script: "scripts/report_estimated_fitness.R"

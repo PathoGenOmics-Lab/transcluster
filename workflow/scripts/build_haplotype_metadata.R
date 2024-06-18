@@ -1,5 +1,7 @@
 #!/usr/bin/env Rscript
 
+# Input clusters columns: cluster_id, label
+
 # Final columns:
 # Virus name, Accession ID,
 # Patient age, Gender,
@@ -19,10 +21,11 @@ METADATA.SELECT.COLS <- c(
     snakemake@params[["metadata_age_column"]]
 )
 
-log_info("Reading cluster table")
-clusters <- read_delim(
-    snakemake@input[["clusters"]],
-    col_select = c("original_id", "cluster_id")
+log_info("Reading cluster table and original IDs")
+clusters <- left_join(
+    read_delim(snakemake@input[["clusters"]]),
+    read_delim(snakemake@input[["extracted_ids"]]),
+    by = c("label" = "modified_id")
 )
 
 log_info("Reading full metadata and merging")
@@ -30,7 +33,7 @@ metadata <- clusters %>%
     left_join(
         read_delim(
             snakemake@input[["full_metadata"]],
-            col_select = METADATA.SELECT.COLS
+            col_select = all_of(METADATA.SELECT.COLS)
         ),
         by = c("original_id" = snakemake@params[["metadata_originalid_column"]])
     )

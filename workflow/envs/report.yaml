@@ -4,3 +4,5 @@ dependencies:
   - r-base=4.1.3
   - r-logger
   - r-tidyverse
+  - r-ggpubr
+  - r-svglite

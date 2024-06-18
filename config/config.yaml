@@ -21,5 +21,8 @@ METADATA_COLS:
     DATE: "Collection date"
     LOCATION: "Location"
     GENDER: "Gender"
-    LINEAGE: "Lineage"
+    LINEAGE: "Pango lineage"
     AGE: "Patient age"
+FITNESS_PADDING_DAYS:
+  - 0
+  - 7

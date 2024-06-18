@@ -1,11 +1,15 @@
 library(tidyverse)
 library(logger)
+library(ggpubr)
 
 Sys.setlocale("LC_TIME", "English")
 theme_set(theme_classic())
 
 combinations <- function(elements) {
   # Generate all possible pairs of elements
+  if (length(elements) < 2) {
+    return(list(elements))
+  }
   pairs <- combn(elements, 2)
   combos <- list()
   for (i in seq_len(ncol(pairs))) {
@@ -15,11 +19,21 @@ combinations <- function(elements) {
 }
 
 log_info("Reading data")
-estimated.fitness <- read_csv(snakemake@input[["fitness"]])
+estimated.fitness <- lapply(
+  snakemake@input[["fitnesses"]],
+  function(path) {
+    read_csv(path, col_types = c(
+      "haplotype" = "c", "cluster_id" = "f",
+      "fitness_adding" = "d", "fitness_slicing" = "d"
+      )
+    )
+  }
+) %>% bind_rows
 
 log_info("Plotting")
 plot.data <- estimated.fitness %>%
-  rename(Adding = fitness_adding, Slicing = fitness_slicing) %>%
+  rename(Adding = fitness_adding, Slicing = fitness_slicing,
+         Haplotype = haplotype) %>%
   pivot_longer(cols = c(Adding, Slicing))
 
 plot.data %>%
@@ -33,7 +47,7 @@ plot.data %>%
     stat_compare_means(method = "wilcox", paired = FALSE) +
     # 2) Pairwise
     stat_compare_means(
-      comparisons = combinations(unique(estimated.fitness$Haplotype)),
+      comparisons = combinations(unique(estimated.fitness$haplotype)),
       method = "wilcox", paired = FALSE
     )
 
@@ -50,7 +64,7 @@ plot.data %>% write_csv(snakemake@output[["report_data"]])
 
 log_info("Writing summary")
 estimated.fitness %>%
-  group_by(Haplotype) %>%
+  group_by(haplotype) %>%
   summarize(
     # Fitness adding
     mean_fitness_adding = mean(fitness_adding, na.rm = TRUE),

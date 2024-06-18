@@ -5,8 +5,4 @@ dependencies:
   - r-logger
   - r-tidyverse
   - r-ape
-  - r-glue
-  - bioconductor-ggtree
-  - r-castor
   - r-phylobase
-  - r-doparallel
