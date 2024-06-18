@@ -129,8 +129,8 @@ rule build_phylo4:
     output:
         tree_p4 = OUTPUT_DIR/"{dataset}/tree.p4.csv"
     resources:
-        mem_mb = 16000,
-        runtime = 12 * 60
+        mem_mb = 8000,
+        runtime = 24 * 60
     script:
         "scripts/build_phylo4.R"
 
