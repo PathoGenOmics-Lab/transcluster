@@ -31,7 +31,7 @@ plot.data <- metadata %>%
     ungroup()
 
 log_info("Writing report")
-ggplot(plot.data, aes(x = !!datecol, y = Haplotype)) +
+ggplot(plot.data, aes(x = !!datecol, y = Country)) +
     geom_point(
         aes(color = Country),
         size = 1,
@@ -43,7 +43,8 @@ ggplot(plot.data, aes(x = !!datecol, y = Haplotype)) +
         date_breaks = "3 month",
         date_minor_breaks = "1 month",
         date_labels = "%b %Y") +
-    scale_color_viridis_d()
+    scale_color_viridis_d() +
+    ggtitle(snakemake@wildcards[["dataset"]])
 
 ggsave(
     snakemake@output[["report"]],
