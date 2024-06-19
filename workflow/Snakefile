@@ -37,7 +37,8 @@ rule all:
         expand(OUTPUT_DIR/"{dataset}/clusters.csv", dataset=DATASETS),
         expand(OUTPUT_DIR/"{dataset}/summary.json", dataset=DATASETS),
         expand(OUTPUT_DIR/"{dataset}/fitness/{days}d/estimated_fitness.csv", dataset=DATASETS, days=config["FITNESS_PADDING_DAYS"]),
-        expand(OUTPUT_DIR/"summary/fitness/{days}d/report.svg", days=config["FITNESS_PADDING_DAYS"])
+        expand(OUTPUT_DIR/"summary/fitness/{days}d/report.svg", days=config["FITNESS_PADDING_DAYS"]),
+        expand(OUTPUT_DIR/"{dataset}/timeline.svg", dataset=DATASETS)
 
 
 rule get_problematic_vcf:
