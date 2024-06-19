@@ -31,8 +31,8 @@ plot.data <- metadata %>%
 log_info("Writing report")
 ggplot(
     plot.data,
-    aes_string(
-        x = snakemake@params[["metadata_date_column"]],
+    aes(
+        x = !!snakemake@params[["metadata_date_column"]],
         y = Haplotype)
     ) +
     geom_point(
