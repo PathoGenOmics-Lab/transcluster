@@ -200,15 +200,13 @@ rule estimate_fitness:
     params:
         metadata_id_column = config["METADATA_COLS"]["FULL_METADATA"]["UNIQUE_ID"],
         metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
-        metadata_location_column = config["METADATA_COLS"]["FULL_METADATA"]["LOCATION"],
-        metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
         metadata_location_column = config["METADATA_COLS"]["FULL_METADATA"]["LOCATION"]
     output:
         fitness = OUTPUT_DIR/"{dataset}/fitness/{days_padding}d/estimated_fitness.csv"
     script: "scripts/estimate_fitness.py"
 
 
-rule report_estimated_fitness:
+rule report_summarized_estimated_fitness:
     threads: 1
     conda: "envs/report.yaml"
     input:
@@ -220,3 +218,18 @@ rule report_estimated_fitness:
         report_data = OUTPUT_DIR/"summary/fitness/{days}d/report.csv",
         summary = OUTPUT_DIR/"summary/fitness/{days}d/summary.csv",
     script: "scripts/report_estimated_fitness.R"
+
+
+rule report_haplotype_timeline:
+    threads: 1
+    conda: "envs/report.yaml"
+    input:
+        haplotype_metadata = OUTPUT_DIR/"{dataset}/metadata.csv"
+    params:
+        metadata_lineage_column = config["METADATA_COLS"]["FULL_METADATA"]["LINEAGE"],
+        metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"]
+        width_mm = 320, height_mm = 100
+    output:
+        report = OUTPUT_DIR/"{dataset}/timeline.svg",
+        report_data = OUTPUT_DIR/"{dataset}/timeline.csv"
+    script: "scripts/report_timeline.R"
