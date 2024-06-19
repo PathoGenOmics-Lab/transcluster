@@ -38,7 +38,8 @@ rule all:
         expand(OUTPUT_DIR/"{dataset}/summary.json", dataset=DATASETS),
         expand(OUTPUT_DIR/"{dataset}/fitness/{days}d/estimated_fitness.csv", dataset=DATASETS, days=config["FITNESS_PADDING_DAYS"]),
         expand(OUTPUT_DIR/"summary/fitness/{days}d/report.svg", days=config["FITNESS_PADDING_DAYS"]),
-        expand(OUTPUT_DIR/"{dataset}/timeline.svg", dataset=DATASETS)
+        expand(OUTPUT_DIR/"{dataset}/timeline.svg", dataset=DATASETS),
+        OUTPUT_DIR/"summary/timeline.svg"
 
 
 rule get_problematic_vcf:
@@ -227,10 +228,23 @@ rule report_haplotype_timeline:
     input:
         haplotype_metadata = OUTPUT_DIR/"{dataset}/metadata.csv"
     params:
-        metadata_lineage_column = config["METADATA_COLS"]["FULL_METADATA"]["LINEAGE"],
         metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
         width_mm = 320, height_mm = 100
     output:
         report = OUTPUT_DIR/"{dataset}/timeline.svg",
         report_data = OUTPUT_DIR/"{dataset}/timeline.csv"
     script: "scripts/report_timeline.R"
+
+
+rule report_summarized_timeline:
+    threads: 1
+    conda: "envs/report.yaml"
+    input:
+        plot_data_tables = expand(OUTPUT_DIR/"{dataset}/timeline.csv", dataset=DATASETS)
+    params:
+        metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
+        width_mm = 320, height_per_haplotype_mm = 100
+    output:
+        report = OUTPUT_DIR/"summary/timeline.svg",
+        report_data = OUTPUT_DIR/"summary/timeline.csv"
+    script: "scripts/report_summarized_timeline.R"
