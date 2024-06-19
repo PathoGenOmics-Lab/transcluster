@@ -15,6 +15,7 @@ plot.data <- lapply(
         read_csv
     ) %>%
     bind_rows
+n.haplotypes <- length(snakemake@input[["plot_data_tables"]])
 
 log_info("Writing report")
 ggplot(plot.data, aes(x = !!datecol, y = Haplotype)) +
@@ -34,8 +35,9 @@ ggplot(plot.data, aes(x = !!datecol, y = Haplotype)) +
 ggsave(
     snakemake@output[["report"]],
     width = snakemake@params[["width_mm"]],
-    height = length(plot.data) * snakemake@params[["height_per_haplotype_mm"]],
-    units = "mm"
+    height = n.haplotypes * snakemake@params[["height_per_haplotype_mm"]],
+    units = "mm",
+    limitsize = FALSE
 )
 
 log_info("Writing report data")

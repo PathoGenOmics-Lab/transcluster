@@ -243,7 +243,7 @@ rule report_summarized_timeline:
         plot_data_tables = expand(OUTPUT_DIR/"{dataset}/timeline.csv", dataset=DATASETS)
     params:
         metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
-        width_mm = 320, height_per_haplotype_mm = 100
+        width_mm = 320, height_per_haplotype_mm = 50
     output:
         report = OUTPUT_DIR/"summary/timeline.svg",
         report_data = OUTPUT_DIR/"summary/timeline.csv"
