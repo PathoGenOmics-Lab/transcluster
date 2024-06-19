@@ -201,9 +201,8 @@ rule estimate_fitness:
         metadata_id_column = config["METADATA_COLS"]["FULL_METADATA"]["UNIQUE_ID"],
         metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
         metadata_location_column = config["METADATA_COLS"]["FULL_METADATA"]["LOCATION"],
-        clusters_id_column = config["METADATA_COLS"]["FULL_METADATA"]["UNIQUE_ID"],
-        clusters_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
-        clusters_location_column = config["METADATA_COLS"]["FULL_METADATA"]["LOCATION"]
+        metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
+        metadata_location_column = config["METADATA_COLS"]["FULL_METADATA"]["LOCATION"]
     output:
         fitness = OUTPUT_DIR/"{dataset}/fitness/{days_padding}d/estimated_fitness.csv"
     script: "scripts/estimate_fitness.py"

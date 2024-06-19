@@ -123,12 +123,12 @@ def read_cluster_analysis(path: str, sep: str) -> pd.DataFrame:
     # Keep samples within transmission clusters (non-null cluster ID)
     df = df[df[ANALYSIS_CLUSTER_ID_COL].notna()]
     # Get countries
-    df["Country"] = extract_country(df, snakemake.params.clusters_location_column)
+    df["Country"] = extract_country(df, snakemake.params.metadata_location_column)
     # Set dates with year and month to the middle of the month and remove dates with only year
-    date_items = df[snakemake.params.clusters_date_column].str.split("-").str.len()
-    df.loc[date_items == 1, snakemake.params.clusters_date_column] = pd.NA
-    df.loc[date_items == 2, snakemake.params.clusters_date_column] = df[snakemake.params.clusters_date_column] + "-15"
-    df["Date"] = pd.to_datetime(df[snakemake.params.clusters_date_column], errors="raise")
+    date_items = df[snakemake.params.metadata_date_column].str.split("-").str.len()
+    df.loc[date_items == 1, snakemake.params.metadata_date_column] = pd.NA
+    df.loc[date_items == 2, snakemake.params.metadata_date_column] = df[snakemake.params.metadata_date_column] + "-15"
+    df["Date"] = pd.to_datetime(df[snakemake.params.metadata_date_column], errors="raise")
     return df
 
 
