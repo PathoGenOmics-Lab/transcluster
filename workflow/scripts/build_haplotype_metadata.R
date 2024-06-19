@@ -22,7 +22,7 @@ METADATA.SELECT.COLS <- c(
 )
 
 log_info("Reading cluster table and original IDs")
-clusters <- left_join(
+clusters <- right_join(
     read_delim(snakemake@input[["clusters"]]),
     read_delim(snakemake@input[["extracted_ids"]]),
     by = c("label" = "modified_id")

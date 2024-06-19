@@ -120,6 +120,8 @@ def analyze_cluster_results(cluster_data: pd.DataFrame, full_metadata: pd.DataFr
 
 def read_cluster_analysis(path: str, sep: str) -> pd.DataFrame:
     df = pd.read_csv(path, sep=sep, dtype={ANALYSIS_CLUSTER_ID_COL: "Int64"})
+    # Keep samples within transmission clusters (non-null cluster ID)
+    df = df[df[ANALYSIS_CLUSTER_ID_COL].notna()]
     # Get countries
     df["Country"] = extract_country(df, snakemake.params.clusters_location_column)
     # Set dates with year and month to the middle of the month and remove dates with only year
