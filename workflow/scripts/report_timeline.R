@@ -7,6 +7,8 @@ library(ggpubr)
 Sys.setlocale("LC_TIME", "English")
 theme_set(theme_pubclean())
 
+datecol <- data_sym(snakemake@params[["metadata_date_column"]])
+
 log_info("Reading metadata")
 metadata <- read_csv(snakemake@input[["haplotype_metadata"]])
 
@@ -29,12 +31,7 @@ plot.data <- metadata %>%
     ungroup()
 
 log_info("Writing report")
-ggplot(
-    plot.data,
-    aes(
-        x = !!snakemake@params[["metadata_date_column"]],
-        y = Haplotype)
-    ) +
+ggplot(plot.data, aes(x = !!datecol, y = Haplotype)) +
     geom_point(
         aes(color = Country),
         size = 1,
