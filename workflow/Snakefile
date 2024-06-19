@@ -227,7 +227,7 @@ rule report_haplotype_timeline:
         haplotype_metadata = OUTPUT_DIR/"{dataset}/metadata.csv"
     params:
         metadata_lineage_column = config["METADATA_COLS"]["FULL_METADATA"]["LINEAGE"],
-        metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"]
+        metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
         width_mm = 320, height_mm = 100
     output:
         report = OUTPUT_DIR/"{dataset}/timeline.svg",
