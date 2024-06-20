@@ -40,7 +40,7 @@ rule all:
         expand(OUTPUT_DIR/"summary/fitness/{days}d/report.svg", days=config["FITNESS_PADDING_DAYS"]),
         expand(OUTPUT_DIR/"{dataset}/timeline/timeline.svg", dataset=DATASETS),
         OUTPUT_DIR/"summary/timeline/timeline.svg",
-        OUTPUT_DIR/"summary/age/metadata.csv"
+        OUTPUT_DIR/"summary/age/transmission_age.svg"
 
 
 rule get_problematic_vcf:
@@ -262,7 +262,9 @@ rule build_age_corrected_haplotype_metadata:
         haplotype_metadata = OUTPUT_DIR/"{dataset}/metadata.csv"
     params:
         metadata_age_column = config["METADATA_COLS"]["FULL_METADATA"]["AGE"],
-        cluster_size_threshold = config["MIN_SIZE"]
+        cluster_size_threshold = config["MIN_SIZE"],
+        min_age = 0,
+        max_age = 120  # Maria Branyas is 117!
     output:
         age_corrected_metadata = OUTPUT_DIR/"{dataset}/age/metadata.csv"
     script: "scripts/build_age_corrected_metadata.R"

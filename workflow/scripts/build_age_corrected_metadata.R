@@ -38,6 +38,8 @@ metadata <- read_csv(
         # all the rest
         TRUE ~ NA
     ) %>%
+    # Remove unrealistic age values
+    mutate(!!agecol := ifelse(0 <= !!agecol & !!agecol <= 120, !!agecol, NA)) %>%
     # Tag transmitted samples
     mutate(
         Transmitted = ifelse(
