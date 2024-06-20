@@ -12,7 +12,7 @@ datecol <- sym(snakemake@params[["metadata_date_column"]])
 log_info("Reading plot data")
 plot.data <- lapply(
         snakemake@input[["plot_data_tables"]],
-        function(path) read_csv(path, col_types = c(!!datecol = "D"))
+        function(path) read_csv(path, col_types = cols(!!datecol := "D"))
     ) %>%
     bind_rows
 n.haplotypes <- length(snakemake@input[["plot_data_tables"]])

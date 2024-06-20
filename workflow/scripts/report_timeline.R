@@ -12,7 +12,7 @@ datecol <- sym(snakemake@params[["metadata_date_column"]])
 log_info("Reading metadata")
 metadata <- read_csv(
     snakemake@input[["haplotype_metadata"]],
-    col_types = c(!!datecol = "D")
+    col_types = cols(!!datecol := "D")
 )
 
 log_info("Formatting metadata")
