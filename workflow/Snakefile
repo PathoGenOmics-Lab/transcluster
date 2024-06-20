@@ -231,7 +231,7 @@ rule report_haplotype_timeline:
         haplotype_metadata = OUTPUT_DIR/"{dataset}/metadata.csv"
     params:
         metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
-        n_top_countries = 10,
+        n_top_countries = 5,
         width_mm = 320, height_mm = 200
     output:
         report = OUTPUT_DIR/"{dataset}/timeline/timeline.svg",
@@ -243,9 +243,10 @@ rule report_summarized_timeline:
     threads: 1
     conda: "envs/report.yaml"
     input:
-        plot_data_tables = expand(OUTPUT_DIR/"{dataset}/timeline/timeline.csv", dataset=DATASETS)
+        haplotype_metadata_tables = expand(OUTPUT_DIR/"{dataset}/metadata.csv", dataset=DATASETS)
     params:
         metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
+        n_top_countries = 12,
         width_mm = 320, height_per_haplotype_mm = 50
     output:
         report = OUTPUT_DIR/"summary/timeline/timeline.svg",

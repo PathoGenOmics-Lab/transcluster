@@ -11,21 +11,48 @@ datecol <- sym(snakemake@params[["metadata_date_column"]])
 
 log_info("Reading plot data")
 plot.data <- lapply(
-        snakemake@input[["plot_data_tables"]],
+        snakemake@input[["haplotype_metadata_tables"]],
         function(path) read_csv(path, col_types = cols(!!datecol := "D"))
     ) %>%
     bind_rows
-n.haplotypes <- length(snakemake@input[["plot_data_tables"]])
+n.haplotypes <- length(snakemake@input[["haplotype_metadata_tables"]])
+
+log_info("Formatting metadata")
+# Extract countries
+plot.data <- plot.data %>%
+    separate(
+        Location,
+        into = c("Continent", "Country"),
+        extra = "drop",
+        sep = "\\ /\\ ",
+        remove = FALSE
+    ) %>%
+    drop_na(Haplotype)
+
+# Rank countries
+top.countries <- plot.data %>%
+  count(Country, sort = TRUE) %>%
+  top_n(snakemake@params[["n_top_countries"]], n) %>%
+  pull(Country)
+
+# Add column for top countries
+plot.data <- plot.data %>%
+    mutate(
+        `Top countries` = ifelse(
+            Country %in% top.countries,
+            Country, "[Other]"
+        )
+    )
 
 log_info("Writing report")
 ggplot(plot.data, aes(x = !!datecol, y = Haplotype)) +
+    geom_violin(linewidth = 0, fill = "black", alpha = 0.4) +
     geom_point(
         aes(color = `Top countries`),
-        size = 1,
-        alpha = 0.5,
+        size = 2,
+        alpha = 0.25,
         position = position_dodge(width = -0.75)
     ) +
-    geom_violin(linewidth = 0, fill = "black", alpha = 0.4) +
     scale_x_date(
         date_breaks = "3 month",
         date_minor_breaks = "1 month",

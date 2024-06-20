@@ -44,13 +44,12 @@ plot.data <- plot.data %>%
 
 log_info("Writing report")
 ggplot(plot.data, aes(x = !!datecol, y = Country)) +
-    geom_point(
+    geom_jitter(
         aes(color = `Top countries`),
         size = 1,
-        alpha = 0.5,
-        position = position_dodge(width = -0.75)
+        alpha = 0.25
     ) +
-    geom_violin(linewidth = 0, fill = "black", alpha = 0.4) +
+    geom_boxplot(alpha = 0.5) +
     scale_x_date(
         date_breaks = "3 month",
         date_minor_breaks = "1 month",
