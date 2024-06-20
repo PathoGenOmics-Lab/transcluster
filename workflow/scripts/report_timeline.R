@@ -7,13 +7,12 @@ library(ggpubr)
 Sys.setlocale("LC_TIME", "English")
 theme_set(theme_pubclean())
 
-datecol.str <- snakemake@params[["metadata_date_column"]]
-datecol <- sym(datecol.str)
+datecol <- sym(snakemake@params[["metadata_date_column"]])
 
 log_info("Reading metadata")
 metadata <- read_csv(
     snakemake@input[["haplotype_metadata"]],
-    col_types = c(datecol.str = "D")
+    col_types = c(!!datecol = "D")
 )
 
 log_info("Formatting metadata")

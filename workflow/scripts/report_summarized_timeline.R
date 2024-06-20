@@ -7,13 +7,12 @@ library(ggpubr)
 Sys.setlocale("LC_TIME", "English")
 theme_set(theme_pubclean())
 
-datecol.str <- snakemake@params[["metadata_date_column"]]
-datecol <- sym(datecol.str)
+datecol <- sym(snakemake@params[["metadata_date_column"]])
 
 log_info("Reading plot data")
 plot.data <- lapply(
         snakemake@input[["plot_data_tables"]],
-        function(path) read_csv(path, col_types = c(datecol.str = "D"))
+        function(path) read_csv(path, col_types = c(!!datecol = "D"))
     ) %>%
     bind_rows
 n.haplotypes <- length(snakemake@input[["plot_data_tables"]])
