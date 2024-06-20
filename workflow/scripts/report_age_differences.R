@@ -25,7 +25,7 @@ agecol <- sym(snakemake@params[["metadata_age_column"]])
 log_info("Reading plot data and fixing ages")
 age.metadata <- lapply(
         snakemake@input[["haplotype_metadata_tables"]],
-        function(path) read_csv(path, col_types = cols(!!datecol := "c"))
+        function(path) read_csv(path, col_types = cols(!!agecol := "c"))
     ) %>%
     bind_rows %>%
     # Try to fix ages
