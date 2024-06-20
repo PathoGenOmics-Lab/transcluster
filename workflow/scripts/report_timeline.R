@@ -47,7 +47,7 @@ ggplot(plot.data, aes(x = !!datecol, y = Country)) +
     geom_jitter(
         aes(color = `Top countries`),
         size = 1,
-        alpha = 0.25
+        alpha = 0.75
     ) +
     geom_boxplot(alpha = 0.5) +
     scale_x_date(

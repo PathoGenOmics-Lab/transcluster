@@ -246,7 +246,7 @@ rule report_summarized_timeline:
         haplotype_metadata_tables = expand(OUTPUT_DIR/"{dataset}/metadata.csv", dataset=DATASETS)
     params:
         metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
-        n_top_countries = 12,
+        n_top_countries = 11,
         width_mm = 320, height_per_haplotype_mm = 50
     output:
         report = OUTPUT_DIR/"summary/timeline/timeline.svg",
