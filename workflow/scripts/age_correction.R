@@ -22,9 +22,9 @@ correct.age <- function(df, agecol) {
             as.numeric(
                 gsub("^[0-9]+ [yY]ears? ([0-9]+) ([mM]onths?|mos?)$", "\\1", !!agecol)
             ) / 12,
-        ),
         # all the rest
         TRUE ~ NA
+        ),
     ) %>%
     # Remove unrealistic age values
     mutate(!!agecol := ifelse(0 <= !!agecol & !!agecol <= 120, !!agecol, NA))
