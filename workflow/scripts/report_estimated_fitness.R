@@ -32,11 +32,13 @@ estimated.fitness <- lapply(
   }
 ) %>% bind_rows
 
-log_info("Plotting")
+log_info("Formatting plot data")
 plot.data <- estimated.fitness %>%
   rename(Adding = fitness_adding, Slicing = fitness_slicing,
          Haplotype = haplotype) %>%
   pivot_longer(cols = c(Adding, Slicing))
+
+log_info("Writing global report")
 
 plot.data %>%
   ggplot(aes(Haplotype, value, color = name)) +
@@ -45,15 +47,14 @@ plot.data %>%
     annotation_logticks(sides = "l") +
     scale_x_discrete(drop = FALSE) +
     ylab("Estimated transmission fitness") +
-    # 1) K-W
+    # 1) Compare between fitness types
     stat_compare_means(method = "wilcox", paired = FALSE) +
-    # 2) Pairwise
+    # 2) Compare pairwise
     stat_compare_means(
       comparisons = combinations(unique(estimated.fitness$haplotype)),
       method = "wilcox", paired = FALSE
     )
 
-log_info("Writing report")
 ggsave(
   snakemake@output[["report"]],
   width = snakemake@params[["width_mm"]],
@@ -61,7 +62,55 @@ ggsave(
   units = "mm"
 )
 
-log_info("Writing report data")
+log_info("Writing fitness-adding report")
+plot.data %>%
+  filter(name == "Adding") %>%
+  ggplot(aes(Haplotype, value)) +
+    geom_boxplot() +
+    scale_y_log10() +
+    annotation_logticks(sides = "l") +
+    scale_x_discrete(drop = FALSE) +
+    ylab("Estimated transmission fitness") +
+    # 1) Compare between fitness types
+    stat_compare_means(method = "wilcox", paired = FALSE) +
+    # 2) Compare pairwise
+    stat_compare_means(
+      comparisons = combinations(unique(estimated.fitness$haplotype)),
+      method = "wilcox", paired = FALSE
+    )
+
+ggsave(
+  snakemake@output[["report_adding"]],
+  width = snakemake@params[["width_mm"]],
+  height = snakemake@params[["height_mm"]],
+  units = "mm"
+)
+
+log_info("Writing fitness-slicing report")
+plot.data %>%
+  filter(name == "Slicing") %>%
+  ggplot(aes(Haplotype, value)) +
+    geom_boxplot() +
+    scale_y_log10() +
+    annotation_logticks(sides = "l") +
+    scale_x_discrete(drop = FALSE) +
+    ylab("Estimated transmission fitness") +
+    # 1) Compare between fitness types
+    stat_compare_means(method = "wilcox", paired = FALSE) +
+    # 2) Compare pairwise
+    stat_compare_means(
+      comparisons = combinations(unique(estimated.fitness$haplotype)),
+      method = "wilcox", paired = FALSE
+    )
+
+ggsave(
+  snakemake@output[["report_slicing"]],
+  width = snakemake@params[["width_mm"]],
+  height = snakemake@params[["height_mm"]],
+  units = "mm"
+)
+
+log_info("Writing global report data")
 plot.data %>% write_csv(snakemake@output[["report_data"]])
 
 log_info("Writing summary")

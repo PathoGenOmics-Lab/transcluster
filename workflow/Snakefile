@@ -218,6 +218,8 @@ rule report_summarized_estimated_fitness:
     output:
         report = OUTPUT_DIR/"summary/fitness/{days}d/report.svg",
         report_data = OUTPUT_DIR/"summary/fitness/{days}d/report.csv",
+        report_adding = OUTPUT_DIR/"summary/fitness/{days}d/report_adding.svg",
+        report_slicing = OUTPUT_DIR/"summary/fitness/{days}d/report_slicing.svg",
         summary = OUTPUT_DIR/"summary/fitness/{days}d/summary.csv",
     script: "scripts/report_estimated_fitness.R"
 
