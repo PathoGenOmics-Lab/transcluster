@@ -22,8 +22,15 @@ METADATA.SELECT.COLS <- c(
 )
 
 log_info("Reading cluster table and original IDs")
+clustering.results <- read_delim(snakemake@input[["clusters"]])
+if (is_empty(clustering.results)) {
+    clustering.results <- tibble(
+        label = character(),
+        cluster_id = character()
+    )
+}
 clusters <- right_join(
-    read_delim(snakemake@input[["clusters"]]),
+    clustering.results,
     read_delim(snakemake@input[["extracted_ids"]]),
     by = c("label" = "modified_id")
 )
