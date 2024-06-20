@@ -39,7 +39,8 @@ rule all:
         expand(OUTPUT_DIR/"{dataset}/fitness/{days}d/estimated_fitness.csv", dataset=DATASETS, days=config["FITNESS_PADDING_DAYS"]),
         expand(OUTPUT_DIR/"summary/fitness/{days}d/report.svg", days=config["FITNESS_PADDING_DAYS"]),
         expand(OUTPUT_DIR/"{dataset}/timeline/timeline.svg", dataset=DATASETS),
-        OUTPUT_DIR/"summary/timeline/timeline.svg"
+        OUTPUT_DIR/"summary/timeline/timeline.svg",
+        OUTPUT_DIR/"summary/age/metadata.csv"
 
 
 rule get_problematic_vcf:
@@ -252,3 +253,19 @@ rule report_summarized_timeline:
         report = OUTPUT_DIR/"summary/timeline/timeline.svg",
         report_data = OUTPUT_DIR/"summary/timeline/timeline.csv"
     script: "scripts/report_summarized_timeline.R"
+
+
+rule report_age_differences:
+    threads: 1
+    conda: "envs/report.yaml"
+    input:
+        haplotype_metadata_tables = expand(OUTPUT_DIR/"{dataset}/metadata.csv", dataset=DATASETS)
+    params:
+        metadata_age_column = config["METADATA_COLS"]["FULL_METADATA"]["AGE"],
+        cluster_size_threshold = config["MIN_SIZE"],
+        width_mm = 320, height_mm = 200
+    output:
+        report_haplotype = OUTPUT_DIR/"summary/age/haplotype_age.svg",
+        report_transmission = OUTPUT_DIR/"summary/age/transmission_age.svg",
+        report_data = OUTPUT_DIR/"summary/age/metadata.csv",
+    script: "scripts/report_age_differences.R"
