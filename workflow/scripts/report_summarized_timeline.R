@@ -20,7 +20,7 @@ n.haplotypes <- length(snakemake@input[["plot_data_tables"]])
 log_info("Writing report")
 ggplot(plot.data, aes(x = !!datecol, y = Haplotype)) +
     geom_point(
-        aes(color = Country),
+        aes(color = `Top countries`),
         size = 1,
         alpha = 0.5,
         position = position_dodge(width = -0.75)

@@ -16,6 +16,7 @@ metadata <- read_csv(
 )
 
 log_info("Formatting metadata")
+# Extract countries
 plot.data <- metadata %>%
     separate(
         Location,
@@ -24,19 +25,27 @@ plot.data <- metadata %>%
         sep = "\\ /\\ ",
         remove = FALSE
     ) %>%
-    drop_na(Haplotype) %>%
-    # Rank countries
-    group_by(Country) %>%
+    drop_na(Haplotype)
+
+# Rank countries
+top.countries <- plot.data %>%
+  count(Country, sort = TRUE) %>%
+  top_n(snakemake@params[["n_top_countries"]], n) %>%
+  pull(Country)
+
+# Add column for top countries
+plot.data <- plot.data %>%
     mutate(
-        Country.Rank = rank(n(), ties.method = "first"),
-        Country = ifelse(Country.Rank <= 10, Country, "[Other]")
-    ) %>%
-    ungroup()
+        `Top countries` = ifelse(
+            Country %in% top.countries,
+            Country, "[Other]"
+        )
+    )
 
 log_info("Writing report")
 ggplot(plot.data, aes(x = !!datecol, y = Country)) +
     geom_point(
-        aes(color = Country),
+        aes(color = `Top countries`),
         size = 1,
         alpha = 0.5,
         position = position_dodge(width = -0.75)
