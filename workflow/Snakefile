@@ -40,7 +40,8 @@ rule all:
         expand(OUTPUT_DIR/"summary/fitness/{days}d/report.svg", days=config["FITNESS_PADDING_DAYS"]),
         expand(OUTPUT_DIR/"{dataset}/timeline/timeline.svg", dataset=DATASETS),
         OUTPUT_DIR/"summary/timeline/timeline.svg",
-        OUTPUT_DIR/"summary/age/transmission_age.svg"
+        OUTPUT_DIR/"summary/age/transmission_age.svg",
+        expand(OUTPUT_DIR/"{dataset}/age/vs_background.svg", dataset=DATASETS)
 
 
 rule get_problematic_vcf:
@@ -281,6 +282,22 @@ rule report_age_differences:
         width_mm = 320, height_mm = 200
     output:
         report_haplotype = OUTPUT_DIR/"summary/age/haplotype_age.svg",
-        report_transmission = OUTPUT_DIR/"summary/age/transmission_age.svg",
-        report_data = OUTPUT_DIR/"summary/age/metadata.csv",
+        report_transmission = OUTPUT_DIR/"summary/age/transmission_age.svg"
     script: "scripts/report_age_differences.R"
+
+
+rule report_age_vs_background:
+    threads: 1
+    conda: "envs/report.yaml"
+    input:
+        age_corrected_metadata = OUTPUT_DIR/"{dataset}/age/metadata.csv",
+        full_metadata = config["METADATA"]
+    params:
+        metadata_age_column = config["METADATA_COLS"]["FULL_METADATA"]["AGE"],
+        metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
+        metadata_id_column = config["METADATA_COLS"]["FULL_METADATA"]["UNIQUE_ID"],
+        width_mm = 320, height_mm = 200
+    output:
+        report = OUTPUT_DIR/"{dataset}/age/vs_background.svg",
+        report_data = OUTPUT_DIR/"{dataset}/age/vs_background.csv"
+    script: "scripts/report_age_vs_background.R"
