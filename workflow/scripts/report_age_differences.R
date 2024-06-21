@@ -70,7 +70,3 @@ ggsave(
     height = snakemake@params[["height_mm"]],
     units = "mm"
 )
-
-
-log_info("Writing age-corrected haplotype metadata")
-age.metadata %>% write_csv(snakemake@output[["report_data"]])
