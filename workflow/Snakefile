@@ -41,7 +41,8 @@ rule all:
         expand(OUTPUT_DIR/"{dataset}/timeline/timeline.svg", dataset=DATASETS),
         OUTPUT_DIR/"summary/timeline/timeline.svg",
         OUTPUT_DIR/"summary/age/transmission_age.svg",
-        expand(OUTPUT_DIR/"{dataset}/age/vs_background.svg", dataset=DATASETS)
+        expand(OUTPUT_DIR/"{dataset}/age/vs_background.svg", dataset=DATASETS),
+        OUTPUT_DIR/"summary/missing/age.svg"
 
 
 rule get_problematic_vcf:
@@ -301,3 +302,20 @@ rule report_age_vs_background:
         report = OUTPUT_DIR/"{dataset}/age/vs_background.svg",
         report_data = OUTPUT_DIR/"{dataset}/age/vs_background.csv"
     script: "scripts/report_age_vs_background.R"
+
+
+rule report_missing_data:
+    threads: 1
+    conda: "envs/report.yaml"
+    input:
+        age_corrected_tables = expand(OUTPUT_DIR/"{dataset}/age/metadata.csv", dataset=DATASETS)
+    params:
+        metadata_age_column = config["METADATA_COLS"]["FULL_METADATA"]["AGE"],
+        metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
+        metadata_location_column = config["METADATA_COLS"]["FULL_METADATA"]["LOCATION"],
+        width_mm = 320, height_mm = 200
+    output:
+        report_age = OUTPUT_DIR/"summary/missing/age.svg",
+        report_location = OUTPUT_DIR/"summary/missing/location.svg",
+        report_date = OUTPUT_DIR/"summary/missing/date.svg"
+    script: "scripts/report_missing_data.R"
