@@ -23,11 +23,14 @@ combinations <- function(elements) {
 agecol <- sym(snakemake@params[["metadata_age_column"]])
 
 
-log_info("Reading plot data and fixing ages")
+log_info("Reading age-corrected metadata")
 age.metadata <- lapply(
   snakemake@input[["age_corrected_tables"]],
   function(path) {
-    read_csv(path, col_types = cols(!!agecol := "n")
+    read_csv(
+      path,
+      col_select = c(Haplotype, !!agecol, Transmitted),
+      col_types = cols(!!agecol := "n")
     )
   }
 ) %>% bind_rows
