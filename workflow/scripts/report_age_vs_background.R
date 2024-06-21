@@ -4,6 +4,8 @@ library(tidyverse)
 library(logger)
 library(ggpubr)
 
+snakemake@source("age_correction.R")
+
 Sys.setlocale("LC_TIME", "English")
 theme_set(theme_classic())
 
@@ -13,21 +15,21 @@ datecol <- sym(snakemake@params[["metadata_date_column"]])
 
 log_info("Reading age-corrected haplotype IDs, ages and dates")
 age.metadata <- read_csv(
-    snakemake@input[["age_corrected_tables"]],
+    snakemake@input[["age_corrected_metadata"]],
     col_select = c(!!idcol, !!agecol, !!datecol),
     col_types = cols(!!agecol := "n", !!datecol := "D")
 )
 
 min.haplotype.date <- min(
-    age.metadata[[snakemake@params[["metadata_age_column"]]]], na.rm = TRUE
+    age.metadata[[snakemake@params[["metadata_date_column"]]]], na.rm = TRUE
 )
 max.haplotype.date <- max(
-    age.metadata[[snakemake@params[["metadata_age_column"]]]], na.rm = TRUE
+    age.metadata[[snakemake@params[["metadata_date_column"]]]], na.rm = TRUE
 )
 
 log_info("Reading background IDs, ages and dates, filtering by date, and correcting ages")
 bg.metadata <- read_delim(
-        snakemake@input[["metadata"]],
+        snakemake@input[["full_metadata"]],
         col_select = c(!!idcol, !!agecol, !!datecol),
         col_types = cols(!!agecol := "c", !!datecol := "D")
     ) %>%
