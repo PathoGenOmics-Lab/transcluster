@@ -13,6 +13,7 @@ idcol <- sym(snakemake@params[["metadata_id_column"]])
 agecol <- sym(snakemake@params[["metadata_age_column"]])
 datecol <- sym(snakemake@params[["metadata_date_column"]])
 
+
 log_info("Reading age-corrected haplotype IDs, ages and dates")
 age.metadata <- read_csv(
     snakemake@input[["age_corrected_metadata"]],
@@ -21,11 +22,12 @@ age.metadata <- read_csv(
 )
 
 min.haplotype.date <- min(
-    age.metadata[[snakemake@params[["metadata_date_column"]]]], na.rm = TRUE
+    age.metadata[[datecol]], na.rm = TRUE
 )
 max.haplotype.date <- max(
-    age.metadata[[snakemake@params[["metadata_date_column"]]]], na.rm = TRUE
+    age.metadata[[datecol]], na.rm = TRUE
 )
+
 
 log_info("Reading background IDs, ages and dates, filtering by date, and correcting ages")
 bg.metadata <- read_delim(
@@ -36,6 +38,7 @@ bg.metadata <- read_delim(
     filter(min.haplotype.date <= !!datecol, !!datecol <= max.haplotype.date) %>%
     correct.age(., agecol)
 
+
 log_info("Building combined age table")
 # The pipeline ensures age.metadata is a subset of bg.metadata
 plot.data <- bg.metadata %>%
@@ -43,24 +46,34 @@ plot.data <- bg.metadata %>%
         is.haplotype = !!idcol %in% age.metadata[[idcol]]
     )
 
+
 log_info("Building age report")
-ks <- ks.test(
-    plot.data %>% filter(is.haplotype) %>% pull(!!agecol),
-    plot.data %>% filter(!is.haplotype) %>% pull(!!agecol)
-)
+ages.haplotype <- plot.data %>% filter(is.haplotype) %>% pull(!!agecol)
+ages.background <- plot.data %>% filter(!is.haplotype) %>% pull(!!agecol)
+if (length(ages.haplotype) == 0 || length(ages.background) == 0) {
+    ks.message <- "Cannot compare ages"
+} else {
+    ks <- ks.test(ages.haplotype, ages.background)
+    ks.message <- paste0(
+        ks$method, ": D = ", ks$statistic, "; p = ", ks$p.value
+    )
+}
+
 plot.data %>%
     ggplot(aes(is.haplotype, !!agecol)) +
     stat_compare_means(method = "wilcox.test", paired = FALSE) +
     ggtitle(
         snakemake@wildcards[["dataset"]],
-        paste0(ks$method, ": D = ", ks$statistic, "; p = ", ks$p.value)
+        ks.message
     )
+
 ggsave(
     snakemake@output[["report"]],
     width = snakemake@params[["width_mm"]],
     height = snakemake@params[["height_mm"]],
     units = "mm"
 )
+
 
 log_info("Writing plot data")
 plot.data %>% write_csv(snakemake@output[["report_data"]])
