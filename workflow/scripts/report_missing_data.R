@@ -4,7 +4,7 @@ library(tidyverse)
 library(logger)
 
 Sys.setlocale("LC_TIME", "English")
-theme_set(theme_classic() + scale_fill_viridis_d(begin = 0.2, end = 0.8))
+theme_set(theme_classic())
 
 agecol <- sym(snakemake@params[["metadata_age_column"]])
 datecol <- sym(snakemake@params[["metadata_date_column"]])
@@ -32,6 +32,7 @@ ggplot(metadata, aes(Haplotype, fill = is.na(!!agecol))) +
         stat = "count",
         position = position_stack(vjust = 0.5)
     ) +
+    scale_fill_viridis_d(begin = 0.2, end = 0.8) +
     ggtitle("Missing age values")
 
 ggsave(
@@ -50,6 +51,7 @@ ggplot(metadata, aes(Haplotype, fill = is.na(!!loccol))) +
         stat = "count",
         position = position_stack(vjust = 0.5)
     ) +
+    scale_fill_viridis_d(begin = 0.2, end = 0.8) +
     ggtitle("Missing location values")
 
 ggsave(
@@ -67,6 +69,7 @@ ggplot(metadata, aes(Haplotype, fill = is.na(!!datecol))) +
         stat = "count",
         position = position_stack(vjust = 0.5)
     ) +
+    scale_fill_viridis_d(begin = 0.2, end = 0.8) +
     ggtitle("Missing date values")
 
 ggsave(
