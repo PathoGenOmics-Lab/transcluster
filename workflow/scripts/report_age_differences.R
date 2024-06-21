@@ -29,7 +29,9 @@ age.metadata <- lapply(
   function(path) {
     read_csv(
       path,
-      col_select = c(Haplotype, !!agecol, Transmitted),
+      col_select = c(
+        Haplotype, !!agecol, Transmitted, cluster.size.threshold.pass
+      ),
       col_types = cols(!!agecol := "n")
     )
   }
