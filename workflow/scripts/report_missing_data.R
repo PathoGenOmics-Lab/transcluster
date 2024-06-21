@@ -17,7 +17,7 @@ metadata <- lapply(
     function(path) {
         read_csv(
             path,
-            col_select = c(!!agecol, !!datecol),
+            col_select = c(Haplotype, !!agecol, !!datecol, !!loccol),
             col_types = cols(!!agecol := "n", !!datecol := "D")
         )
     }
