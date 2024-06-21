@@ -13,7 +13,7 @@ loccol <- sym(snakemake@params[["metadata_location_column"]])
 
 log_info("Reading age-corrected metadata")
 metadata <- lapply(
-    snakemake@input[["fitnesses"]],
+    snakemake@input[["age_corrected_tables"]],
     function(path) {
         read_csv(
             path,
