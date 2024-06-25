@@ -61,9 +61,8 @@ if (length(ages.haplotype) == 0 || length(ages.background) == 0) {
 
 plot.data %>%
     ggplot(aes(`Is haplotype`, !!agecol)) +
-    geom_jitter(alpha = 0.5) +
     geom_violin(alpha = 0.5) +
-    geom_boxplot(alpha = 0.2) +
+    geom_boxplot(alpha = 0.5) +
     stat_compare_means(method = "wilcox.test", paired = FALSE) +
     ggtitle(
         snakemake@wildcards[["dataset"]],

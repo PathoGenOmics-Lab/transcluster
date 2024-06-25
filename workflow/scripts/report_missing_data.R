@@ -35,7 +35,8 @@ metadata %>%
             position = position_stack(vjust = 0.5)
         ) +
         scale_fill_viridis_d(begin = 0.2, end = 0.8) +
-        ggtitle("Missing age values")
+        ggtitle("Missing age values") +
+        theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
 ggsave(
   snakemake@output[["report_age"]],
@@ -56,7 +57,8 @@ metadata %>%
             position = position_stack(vjust = 0.5)
         ) +
         scale_fill_viridis_d(begin = 0.2, end = 0.8) +
-        ggtitle("Missing location values")
+        ggtitle("Missing location values") +
+        theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
 ggsave(
   snakemake@output[["report_location"]],
@@ -76,7 +78,8 @@ metadata %>%
             position = position_stack(vjust = 0.5)
         ) +
         scale_fill_viridis_d(begin = 0.2, end = 0.8) +
-        ggtitle("Missing date values")
+        ggtitle("Missing date values") +
+        theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
 
 ggsave(
   snakemake@output[["report_date"]],
