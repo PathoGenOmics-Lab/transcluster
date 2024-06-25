@@ -43,13 +43,13 @@ log_info("Building combined age table")
 # The pipeline ensures age.metadata is a subset of bg.metadata
 plot.data <- bg.metadata %>%
     mutate(
-        is.haplotype = !!idcol %in% age.metadata[[idcol]]
+        `Is haplotype` = !!idcol %in% age.metadata[[idcol]]
     )
 
 
 log_info("Building age report")
-ages.haplotype <- plot.data %>% filter(is.haplotype) %>% pull(!!agecol)
-ages.background <- plot.data %>% filter(!is.haplotype) %>% pull(!!agecol)
+ages.haplotype <- plot.data %>% filter(`Is haplotype`) %>% pull(!!agecol)
+ages.background <- plot.data %>% filter(!`Is haplotype`) %>% pull(!!agecol)
 if (length(ages.haplotype) == 0 || length(ages.background) == 0) {
     ks.message <- "Cannot compare ages"
 } else {
@@ -60,7 +60,10 @@ if (length(ages.haplotype) == 0 || length(ages.background) == 0) {
 }
 
 plot.data %>%
-    ggplot(aes(is.haplotype, !!agecol)) +
+    ggplot(aes(`Is haplotype`, !!agecol)) +
+    geom_jitter(alpha = 0.5) +
+    geom_violin(alpha = 0.5) +
+    geom_boxplot(alpha = 0.2) +
     stat_compare_means(method = "wilcox.test", paired = FALSE) +
     ggtitle(
         snakemake@wildcards[["dataset"]],
