@@ -25,15 +25,17 @@ metadata <- lapply(
 
 
 log_info("Plotting missing ages")
-ggplot(metadata, aes(Haplotype, fill = is.na(!!agecol))) +
-    geom_bar(stat = "count") +
-    geom_text(
-        aes(label = ..count..),
-        stat = "count",
-        position = position_stack(vjust = 0.5)
-    ) +
-    scale_fill_viridis_d(begin = 0.2, end = 0.8) +
-    ggtitle("Missing age values")
+metadata %>%
+    mutate(`Missing age` = is.na(!!agecol)) %>%
+    ggplot(aes(Haplotype, fill = `Missing age`)) +
+        geom_bar(stat = "count") +
+        geom_text(
+            aes(label = ..count..),
+            stat = "count",
+            position = position_stack(vjust = 0.5)
+        ) +
+        scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+        ggtitle("Missing age values")
 
 ggsave(
   snakemake@output[["report_age"]],
@@ -44,15 +46,17 @@ ggsave(
 
 
 log_info("Plotting missing locations")
-ggplot(metadata, aes(Haplotype, fill = is.na(!!loccol))) +
-    geom_bar(stat = "count") +
-    geom_text(
-        aes(label = ..count..),
-        stat = "count",
-        position = position_stack(vjust = 0.5)
-    ) +
-    scale_fill_viridis_d(begin = 0.2, end = 0.8) +
-    ggtitle("Missing location values")
+metadata %>%
+    mutate(`Missing location` = is.na(!!loccol)) %>%
+    ggplot(aes(Haplotype, fill = `Missing location`)) +
+        geom_bar(stat = "count") +
+        geom_text(
+            aes(label = ..count..),
+            stat = "count",
+            position = position_stack(vjust = 0.5)
+        ) +
+        scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+        ggtitle("Missing location values")
 
 ggsave(
   snakemake@output[["report_location"]],
@@ -62,15 +66,17 @@ ggsave(
 )
 
 log_info("Plotting missing dates")
-ggplot(metadata, aes(Haplotype, fill = is.na(!!datecol))) +
-    geom_bar(stat = "count") +
-    geom_text(
-        aes(label = ..count..),
-        stat = "count",
-        position = position_stack(vjust = 0.5)
-    ) +
-    scale_fill_viridis_d(begin = 0.2, end = 0.8) +
-    ggtitle("Missing date values")
+metadata %>%
+    mutate(`Missing date` = is.na(!!datecol)) %>%
+    ggplot(aes(Haplotype, fill = `Missing date`)) +
+        geom_bar(stat = "count") +
+        geom_text(
+            aes(label = ..count..),
+            stat = "count",
+            position = position_stack(vjust = 0.5)
+        ) +
+        scale_fill_viridis_d(begin = 0.2, end = 0.8) +
+        ggtitle("Missing date values")
 
 ggsave(
   snakemake@output[["report_date"]],
