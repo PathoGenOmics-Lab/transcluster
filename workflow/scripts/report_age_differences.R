@@ -36,14 +36,14 @@ age.metadata <- lapply(
     )
   }
 ) %>% bind_rows
-
+n.haplotypes <- length(snakemake@input[["age_corrected_tables"]])
 
 log_info("Plotting age differences between haplotypes")
 age.metadata %>%
     ggplot(aes(x = Haplotype, y = !!agecol)) +
     geom_jitter(alpha = 0.5) +
-    geom_violin() +
-    geom_boxplot(alpha = 0.2, varwidth = TRUE) +
+    geom_violin(alpha = 0.5) +
+    geom_boxplot(alpha = 0.2) +
     stat_summary(fun.y = mean, geom = "point") +
     stat_compare_means(
         comparisons = combinations(unique(age.metadata$Haplotype)),
@@ -52,7 +52,7 @@ age.metadata %>%
 
 ggsave(
     snakemake@output[["report_haplotype"]],
-    width = snakemake@params[["width_mm"]],
+    width = n.haplotypes * snakemake@params[["width_per_haplotype_mm"]],
     height = snakemake@params[["height_mm"]],
     units = "mm"
 )
@@ -63,15 +63,15 @@ age.metadata %>%
     filter(cluster.size.threshold.pass) %>%
     ggplot(aes(x = Haplotype, y = !!agecol, fill = Transmitted)) +
     geom_jitter(alpha = 0.5) +
-    geom_violin() +
-    geom_boxplot(alpha = 0.2, varwidth = TRUE) +
+    geom_violin(alpha = 0.5) +
+    geom_boxplot(alpha = 0.2) +
     stat_summary(fun.y = mean, geom = "point") +
     stat_compare_means(method = "wilcox", paired = FALSE) +
     scale_fill_viridis_d()
 
 ggsave(
     snakemake@output[["report_transmission"]],
-    width = snakemake@params[["width_mm"]],
+    width = n.haplotypes * snakemake@params[["width_per_haplotype_mm"]],
     height = snakemake@params[["height_mm"]],
     units = "mm"
 )

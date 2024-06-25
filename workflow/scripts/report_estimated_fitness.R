@@ -31,6 +31,7 @@ estimated.fitness <- lapply(
     )
   }
 ) %>% bind_rows
+n.haplotypes <- length(snakemake@input[["fitnesses"]])
 
 log_info("Formatting plot data")
 plot.data <- estimated.fitness %>%
@@ -57,7 +58,7 @@ plot.data %>%
 
 ggsave(
   snakemake@output[["report"]],
-  width = snakemake@params[["width_mm"]],
+  width = n.haplotypes * snakemake@params[["width_per_haplotype_mm"]],
   height = snakemake@params[["height_mm"]],
   units = "mm"
 )
@@ -81,7 +82,7 @@ plot.data %>%
 
 ggsave(
   snakemake@output[["report_adding"]],
-  width = snakemake@params[["width_mm"]],
+  width = n.haplotypes * snakemake@params[["width_per_haplotype_mm"]],
   height = snakemake@params[["height_mm"]],
   units = "mm"
 )
@@ -105,7 +106,7 @@ plot.data %>%
 
 ggsave(
   snakemake@output[["report_slicing"]],
-  width = snakemake@params[["width_mm"]],
+  width = n.haplotypes * snakemake@params[["width_per_haplotype_mm"]],
   height = snakemake@params[["height_mm"]],
   units = "mm"
 )

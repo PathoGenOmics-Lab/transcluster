@@ -217,7 +217,7 @@ rule report_summarized_estimated_fitness:
     input:
         fitnesses = expand(OUTPUT_DIR/"{dataset}/fitness/{{days}}d/estimated_fitness.csv", dataset=DATASETS)
     params:
-        width_mm = 320, height_mm = 240
+        width_per_haplotype_mm = 50, height_mm = 240
     output:
         report = OUTPUT_DIR/"summary/fitness/{days}d/report.svg",
         report_data = OUTPUT_DIR/"summary/fitness/{days}d/report.csv",
@@ -280,7 +280,7 @@ rule report_age_differences:
     params:
         metadata_age_column = config["METADATA_COLS"]["FULL_METADATA"]["AGE"],
         cluster_size_threshold = config["MIN_SIZE"],
-        width_mm = 320, height_mm = 200
+        width_per_haplotype_mm = 50, height_mm = 200
     output:
         report_haplotype = OUTPUT_DIR/"summary/age/haplotype_age.svg",
         report_transmission = OUTPUT_DIR/"summary/age/transmission_age.svg"
