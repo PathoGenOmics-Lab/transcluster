@@ -211,7 +211,7 @@ rule estimate_fitness:
     script: "scripts/estimate_fitness.py"
 
 
-rule report_summarized_estimated_fitness:
+rule report_estimated_fitness:
     threads: 1
     conda: "envs/report.yaml"
     input:
@@ -220,6 +220,7 @@ rule report_summarized_estimated_fitness:
         width_per_haplotype_mm = 50, height_mm = 240
     output:
         report = OUTPUT_DIR/"summary/fitness/{days}d/report.svg",
+        report_simple = OUTPUT_DIR/"summary/fitness/{days}d/report.simple.svg",
         report_data = OUTPUT_DIR/"summary/fitness/{days}d/report.csv",
         report_adding = OUTPUT_DIR/"summary/fitness/{days}d/report_adding.svg",
         report_slicing = OUTPUT_DIR/"summary/fitness/{days}d/report_slicing.svg",
@@ -280,7 +281,7 @@ rule report_age_differences:
     params:
         metadata_age_column = config["METADATA_COLS"]["FULL_METADATA"]["AGE"],
         cluster_size_threshold = config["MIN_SIZE"],
-        width_per_haplotype_mm = 50, height_mm = 200
+        width_per_haplotype_mm = 50, height_mm = 300
     output:
         report_haplotype = OUTPUT_DIR/"summary/age/haplotype_age.svg",
         report_transmission = OUTPUT_DIR/"summary/age/transmission_age.svg"

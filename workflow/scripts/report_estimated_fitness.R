@@ -39,9 +39,9 @@ plot.data <- estimated.fitness %>%
          Haplotype = haplotype) %>%
   pivot_longer(cols = c(Adding, Slicing))
 
-log_info("Writing global report")
+log_info("Writing global reports")
 
-plot.data %>%
+p <- plot.data %>%
   ggplot(aes(Haplotype, value, color = name)) +
     geom_boxplot() +
     scale_y_log10() +
@@ -49,7 +49,16 @@ plot.data %>%
     scale_x_discrete(drop = FALSE) +
     ylab("Estimated transmission fitness") +
     # 1) Compare between fitness types
-    stat_compare_means(method = "wilcox", paired = FALSE) +
+    stat_compare_means(method = "wilcox", paired = FALSE)
+p
+ggsave(
+  snakemake@output[["report_simple"]],
+  width = n.haplotypes * snakemake@params[["width_per_haplotype_mm"]],
+  height = snakemake@params[["height_mm"]],
+  units = "mm"
+)
+
+p +
     # 2) Compare pairwise
     stat_compare_means(
       comparisons = combinations(unique(estimated.fitness$haplotype)),
