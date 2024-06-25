@@ -72,9 +72,7 @@ plot.data %>%
     annotation_logticks(sides = "l") +
     scale_x_discrete(drop = FALSE) +
     ylab("Estimated transmission fitness") +
-    # 1) Compare between fitness types
-    stat_compare_means(method = "wilcox", paired = FALSE) +
-    # 2) Compare pairwise
+    # Compare pairwise
     stat_compare_means(
       comparisons = combinations(unique(estimated.fitness$haplotype)),
       method = "wilcox", paired = FALSE
@@ -96,9 +94,7 @@ plot.data %>%
     annotation_logticks(sides = "l") +
     scale_x_discrete(drop = FALSE) +
     ylab("Estimated transmission fitness") +
-    # 1) Compare between fitness types
-    stat_compare_means(method = "wilcox", paired = FALSE) +
-    # 2) Compare pairwise
+    # Compare pairwise
     stat_compare_means(
       comparisons = combinations(unique(estimated.fitness$haplotype)),
       method = "wilcox", paired = FALSE
