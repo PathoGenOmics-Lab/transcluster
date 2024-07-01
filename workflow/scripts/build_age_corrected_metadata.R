@@ -16,7 +16,7 @@ metadata <- read_csv(
         snakemake@input[["haplotype_metadata"]],
         col_types = cols(!!agecol := "c")
     ) %>%
-    correct.age(., agecol) %>%
+    correct.age(., agecol, as.numeric(snakemake@params[["max_age"]])) %>%
     # Tag transmitted samples
     mutate(
         Transmitted = ifelse(
