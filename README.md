@@ -7,62 +7,68 @@
 A Snakemake pipeline to find SARS-CoV-2 clusters in a reference phylogeny.
 
 It requires an input directory (`INPUT_DIR` parameter, default: `input/`) containing at least
-one `.txt` file with a list of record IDs (one per line). Each ID list is evaluated
+one `.txt` file with a list of sample IDs (one per line). Each ID list is evaluated
 separately, possibly in parallel.
-Thus, records listed in a given list of samples are extracted from a FASTA file
-containing an aligned sequence dataset (provided through the `ALIGNED_FULL_FASTA` parameter)
-and placed on a reference phylogeny in Newick format (`REFERENCE_TREE`parameter ). Then, the
-pipeline looks for transmission clusters using a breadth-first search approach, skipping
+
+The sequence records from each list of target samples are extracted from a FASTA file
+containing an aligned sequence dataset (provided through the `ALIGNED_FULL_FASTA` parameter),
+and placed on a reference phylogeny in Newick format (`REFERENCE_TREE` parameter).
+
+Then, the
+pipeline looks for clusters using a breadth-first search approach, skipping
 clades that do not conform to the parametrized clustering criteria (`MIN_SIZE` and `MIN_PROP`
-parameters, default: ≥2 members and ≥90% proportion of target samples). Results are written
-to a subdirectory within the output directory (`OUTPUT_DIR` parameter, default: `output/`).
+parameters, default: ≥2 members and ≥90% proportion of target samples),
+using [`tcfinder`](https://github.com/PathoGenOmics-Lab/tcfinder).
 
-All parameters have a default setting except for `ALIGNED_FULL_FASTA`, which must be provided
-by the user. Parameters can be set and overridden by modifying the [`config.yaml`](config/config.yaml)
-file or through the `--config` command line argument (see the
-[Snakemake docs](https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html#standard-configuration)).
+Additionally,
+a fitness metric is estimated for each cluster by calculating the the ratio of the number
+of tips in the cluster to the number of sequences deposited in GISAID during the same time period.
+These "background" samples include those collected between the first and last case within the
+cluster. The time window is symmetrically padded with a specified number of days (`FITNESS_PADDING_DAYS`
+parameter, default: 0 and 7). The denominator helps control for the effect of uneven sequencing
+efforts across different times and locations, and is calculated in two ways:
 
-The pipeline can also leverage an HPC environment using SLURM.
+1. *Adding* the number of background samples from all the countries where the cluster was observed.
+2. *Slicing* the cluster into each country where the cluster was observed, separately calculating the background
+   samples for each country with its different time windows, and then adding them together.
+
+![Estimated fitness denominator](/docs/estimated-fitness-denominator.png)
+
+Finally, a series of figures (including sample timelines, comparisons of estimated fitness and missing data),
+are generated. Results are written to a subdirectory within the output directory
+(`OUTPUT_DIR` parameter, default: `output/`).
+
+All parameters have a default value except for `ALIGNED_FULL_FASTA` and `METADATA`, which must
+be provided by the user. Parameters can be set and overridden by modifying the
+[`config.yaml`](config/config.yaml) file or through the `--config` command line argument (see
+the [Snakemake docs](https://snakemake.readthedocs.io/en/stable/snakefiles/configuration.html#standard-configuration)).
 
 ## Usage
 
-This pipeline requires `conda`/`mamba` and `snakemake`. The rest of dependencies are
+### Local execution
+
+The workflow requires `conda`/`mamba` and `snakemake`. The rest of dependencies are
 defined in [YAML environment files](workflow/envs) and can be automatically installed
 upon execution through the command line argument `--use-conda`.
 
-To run the pipeline with 4 cores:
+To run the pipeline using 4 cores, with the [`default` workflow profile](/profiles/default):
 
 ```bash
 snakemake --use-conda -c 4
 ```
 
-To run a batch job with SLURM (defaults time limit: 15 days):
+### Cluster or cloud execution
 
-```bash
-sbatch run-slurm.sh
-```
+The workflow can be easily run on a cluster or in the cloud through
+[Snakemake executor plugins](https://snakemake.readthedocs.io/en/stable/tutorial/additional_features.html#cluster-or-cloud-execution).
+Further configuration can be set using [Snakemake profiles](https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles).
 
-Note that the `sbatch` options set in [`run-slurm.sh`](run-slurm.sh) and [`slurm.yaml`](config/slurm.yaml)
-might need to be modified to meet the user's needs depending on the particular cluster characteristics.
+We provide the [`run-slurm.sh`](/run-slurm.sh) Slurm batch script as an example.
+It requires the [`slurm` executor plugin](https://snakemake.github.io/snakemake-plugin-catalog/plugins/executor/slurm.html).
+Note that the `SBATCH` options and the profile definition might need to be
+modified to meet the user's needs depending on the particular cluster.
 
 ## Configuration parameters
-
-### `REFERENCE_TREE`
-
-URL or path pointing to a reference phylogeny to place the target samples in.
-
-Select a reference tree with all GISAID sequences up to a date by providing the following `REFERENCE_TREE`
-(replace `YYYY`, `MM` and `DD` according to the desired threshold date):
-
-```url
-https://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/YYYY/MM/DD/public-YYYY-MM-DD.all.masked.pb.gz
-```
-
-Alternatively, select a locally stored tree in `.protobuf` format by providing its path.
-
-### `PROBLEMATIC_VCF`
-
-Path or URL pointing to a VCF file containing problematic sites.
 
 ### `ALIGNED_FULL_FASTA`
 
@@ -71,7 +77,39 @@ from this file according to their ID. Sequences must be aligned to `REFERENCE_FA
 
 ### `METADATA`
 
-Path to the GISAID metadata of the input sequences in CSV format.
+Path to the GISAID metadata of the input sequences in tabular format.
+
+### `METADATA_COLS / FULL_METADATA`
+
+This section defines the GISAID metadata column names. GISAID may update their column names over time,
+so these settings ensure compatibility.
+
+- `ORIGINAL_ID`: the sample identifier as it appears in the sequence record in the FASTA file (default: "Virus name").
+- `UNIQUE_ID`: a unique identifier guaranteed to be specific to each sample (default: "Accession ID", the EPI_ISL IDs).
+- `DATE`: date when the sample was collected (default: "Collection date").
+- `LOCATION`: location where the sample was collected (default: "Location").
+- `GENDER`: gender of the host or patient from whom the sample was collected (default: "Gender").
+- `LINEAGE`: viral lineage assigned to the sample (default: "Pango lineage").
+- `AGE`: age of the host or patient from whom the sample was collected (default: "Patient age").
+
+### `REFERENCE_TREE`
+
+URL or path pointing to a reference phylogeny to place the target samples in.
+
+Select a reference tree containing the appropriate GISAID sequences up to a date
+by providing the following `REFERENCE_TREE` (replace `YYYY`, `MM` and `DD`
+according to the desired threshold date):
+
+```url
+https://hgdownload.soe.ucsc.edu/goldenPath/wuhCor1/UShER_SARS-CoV-2/YYYY/MM/DD/public-YYYY-MM-DD.all.masked.pb.gz
+```
+
+Alternatively, select a locally stored tree in
+[UShER](https://usher-wiki.readthedocs.io/en/latest/UShER.html) protobuf format by providing its path.
+
+### `PROBLEMATIC_VCF`
+
+Path or URL pointing to a VCF file containing problematic sites.
 
 ### `REFERENCE_FASTA`
 
@@ -91,6 +129,10 @@ and the minimum number of samples within a cluster, respectively.
 A string used to replace spaces in FASTA records to avoid truncation of sequence descriptors during
 the analysis.
 
+### `FITNESS_PADDING_DAYS`
+
+A list of integers that specify the number of days to pad the fitness estimation denominator time windows with.
+
 ## Testing the pipeline
 
-The pipeline can be tested by running `test-local.sh`.
+The workflow can be run with test data by executing [`test-local.sh`](/test-local.sh).
