@@ -40,7 +40,6 @@ plot.data <- estimated.fitness %>%
   pivot_longer(cols = c(Adding, Slicing))
 
 log_info("Writing global reports")
-
 p <- plot.data %>%
   ggplot(aes(Haplotype, value, color = name)) +
     geom_boxplot() +
@@ -137,3 +136,49 @@ estimated.fitness %>%
     sem_fitness_slicing = sd_fitness_slicing / sqrt(length(which(!is.na(fitness_slicing))))
   ) %>%
   write_csv(snakemake@output[["summary"]])
+
+log_info("Writing contrast table")
+lapply(
+    combinations(unique(estimated.fitness$haplotype)),
+    function(pair) {
+      # Slicing
+      slicing.1 <- estimated.fitness %>%
+        filter(haplotype == pair[1]) %>%
+        pull(fitness_slicing)
+      slicing.2 <- estimated.fitness %>%
+        filter(haplotype == pair[2]) %>%
+        pull(fitness_slicing)
+      wilcox.slicing <- wilcox.test(slicing.1, slicing.2)
+      # Adding
+      adding.1 <- estimated.fitness %>%
+        filter(haplotype == pair[1]) %>%
+        pull(fitness_adding)
+      adding.2 <- estimated.fitness %>%
+        filter(haplotype == pair[2]) %>%
+        pull(fitness_adding)
+      wilcox.adding <- wilcox.test(adding.1, adding.2)
+      # Final dataframe
+      rbind(
+          # Slicing
+          data.frame(
+            `Haplotype 1` = pair[1], `Haplotype 2` = pair[2],
+            Type = "slicing",
+            Method = wilcox.slicing$method,
+            Alternative = wilcox.slicing$alternative,
+            Statistic = wilcox.slicing$statistic,
+            `P-value` = wilcox.slicing$p.value
+          ),
+          # Adding
+          data.frame(
+            `Haplotype 1` = pair[1], `Haplotype 2` = pair[2],
+            Type = "adding",
+            Method = wilcox.adding$method,
+            Alternative = wilcox.adding$alternative,
+            Statistic = wilcox.adding$statistic,
+            `P-value` = wilcox.adding$p.value
+          ),
+      )
+    }
+  ) %>%
+  bind_rows %>%
+  write_csv(snakemake@output[["report_contrast"]])

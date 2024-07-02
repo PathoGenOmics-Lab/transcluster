@@ -225,6 +225,7 @@ rule report_estimated_fitness:
         report_adding = OUTPUT_DIR/"summary/fitness/{days}d/report_adding.svg",
         report_slicing = OUTPUT_DIR/"summary/fitness/{days}d/report_slicing.svg",
         summary = OUTPUT_DIR/"summary/fitness/{days}d/summary.csv",
+        report_contrast = OUTPUT_DIR/"summary/fitness/{days}d/report_contrast.csv"
     script: "scripts/report_estimated_fitness.R"
 
 
@@ -284,6 +285,7 @@ rule report_age_differences:
         width_per_haplotype_mm = 50, height_mm = 300
     output:
         report_haplotype = OUTPUT_DIR/"summary/age/haplotype_age.svg",
+        report_haplotype_contrast = OUTPUT_DIR/"summary/age/haplotype_age.contrast.csv",
         report_haplotype_simple = OUTPUT_DIR/"summary/age/haplotype_age.simple.svg",
         report_transmission = OUTPUT_DIR/"summary/age/transmission_age.svg"
     script: "scripts/report_age_differences.R"

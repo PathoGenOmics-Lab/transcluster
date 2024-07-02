@@ -85,3 +85,26 @@ ggsave(
     height = snakemake@params[["height_mm"]],
     units = "mm"
 )
+
+log_info("Writing between-haplotypes contrast table")
+lapply(
+    combinations(unique(age.metadata$Haplotype)),
+    function(pair) {
+      ages.1 <- age.metadata %>%
+        filter(Haplotype == pair[1]) %>%
+        pull(!!agecol)
+      ages.2 <- age.metadata %>%
+        filter(Haplotype == pair[2]) %>%
+        pull(!!agecol)
+      wilcox.ages <- wilcox.test(ages.1, ages.2)
+      data.frame(
+        `Haplotype 1` = pair[1], `Haplotype 2` = pair[2],
+        Method = wilcox.ages$method,
+        Alternative = wilcox.ages$alternative,
+        Statistic = wilcox.ages$statistic,
+        `P-value` = wilcox.ages$p.value
+      )
+    }
+  ) %>%
+  bind_rows %>%
+  write_csv(snakemake@output[["report_haplotype_contrast"]])
