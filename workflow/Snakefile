@@ -301,6 +301,8 @@ rule report_age_vs_background:
         metadata_age_column = config["METADATA_COLS"]["FULL_METADATA"]["AGE"],
         metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
         metadata_id_column = config["METADATA_COLS"]["FULL_METADATA"]["UNIQUE_ID"],
+        min_age = rules.build_age_corrected_haplotype_metadata.params.min_age,
+        max_age = rules.build_age_corrected_haplotype_metadata.params.max_age,
         width_mm = 320, height_mm = 200
     output:
         report = OUTPUT_DIR/"{dataset}/age/vs_background.svg",

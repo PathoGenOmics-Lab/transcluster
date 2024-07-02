@@ -1,6 +1,6 @@
 library(tidyverse)
 
-correct.age <- function(df, agecol, max_age) {
+correct.age <- function(df, agecol, min_age, max_age) {
     df %>%
     # Re-parse values
     mutate(
@@ -27,5 +27,5 @@ correct.age <- function(df, agecol, max_age) {
         ),
     ) %>%
     # Remove unrealistic age values
-    mutate(!!agecol := ifelse(0 <= !!agecol & !!agecol <= max_age, !!agecol, NA))
+    mutate(!!agecol := ifelse(min_age <= !!agecol & !!agecol <= max_age, !!agecol, NA))
 }

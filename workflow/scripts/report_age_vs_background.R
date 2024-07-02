@@ -36,7 +36,7 @@ bg.metadata <- read_delim(
         col_types = cols(!!agecol := "c", !!datecol := "D")
     ) %>%
     filter(min.haplotype.date <= !!datecol, !!datecol <= max.haplotype.date) %>%
-    correct.age(., agecol)
+    correct.age(., agecol, as.numeric(snakemake@params[["min_age"]]), as.numeric(snakemake@params[["max_age"]]))
 
 
 log_info("Building combined age table")
