@@ -176,7 +176,7 @@ lapply(
             Alternative = wilcox.adding$alternative,
             Statistic = wilcox.adding$statistic,
             `P-value` = wilcox.adding$p.value
-          ),
+          )
       )
     }
   ) %>%
