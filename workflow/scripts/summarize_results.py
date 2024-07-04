@@ -15,7 +15,7 @@ if __name__ == "__main__":
         clusters = pd.read_csv(snakemake.input.clusters)
     except pd.errors.EmptyDataError:
         clusters = pd.DataFrame(columns=["cluster_id", "label"])
-    extracted_ids = set(pd.read_csv(snakemake.input.extracted_ids)["original_id"])
+    extracted_ids = set(pd.read_csv(snakemake.input.extracted_ids)["modified_id"])
     with open(snakemake.input.ids_file) as f:
         input_ids = set(line.strip() for line in f)
 
