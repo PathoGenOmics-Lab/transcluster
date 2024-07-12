@@ -12,7 +12,8 @@ separately, possibly in parallel.
 
 The sequence records from each list of target samples are extracted from a FASTA file
 containing an aligned sequence dataset (provided through the `ALIGNED_FULL_FASTA` parameter),
-and placed on a reference phylogeny in Newick format (`REFERENCE_TREE` parameter).
+and placed on a reference phylogeny in Newick format (`REFERENCE_TREE` parameter), using [UShER](https://usher-wiki.readthedocs.io/en/latest/UShER.html).
+Sample identifiers are transformed beforehand so that samples are deduplicated automatically.
 
 Then, the
 pipeline looks for clusters using a breadth-first search approach, skipping
