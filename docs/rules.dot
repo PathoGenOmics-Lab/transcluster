@@ -1,0 +1,50 @@
+digraph snakemake_dag {
+    graph[bgcolor=white, margin=0];
+    node[shape=box, style=rounded, fontname=sans,                 fontsize=10, penwidth=2];
+    edge[penwidth=2, color=grey];
+	0[label = "all", color = "0.47 0.6 0.85", style="rounded"];
+	1[label = "calculate_clusters", color = "0.35 0.6 0.85", style="rounded"];
+	2[label = "build_phylo4", color = "0.00 0.6 0.85", style="rounded"];
+	3[label = "phylogenetic_placement", color = "0.51 0.6 0.85", style="rounded"];
+	4[label = "extract_records", color = "0.43 0.6 0.85", style="rounded"];
+	5[label = "get_problematic_vcf", color = "0.39 0.6 0.85", style="rounded"];
+	6[label = "get_reference_tree", color = "0.59 0.6 0.85", style="rounded"];
+	7[label = "summarize_results", color = "0.27 0.6 0.85", style="rounded"];
+	8[label = "estimate_fitness", color = "0.04 0.6 0.85", style="rounded"];
+	9[label = "build_haplotype_metadata", color = "0.31 0.6 0.85", style="rounded"];
+	10[label = "report_estimated_fitness", color = "0.08 0.6 0.85", style="rounded"];
+	11[label = "report_haplotype_timeline", color = "0.12 0.6 0.85", style="rounded"];
+	12[label = "report_summarized_timeline", color = "0.24 0.6 0.85", style="rounded"];
+	13[label = "report_age_differences", color = "0.63 0.6 0.85", style="rounded"];
+	14[label = "build_age_corrected_haplotype_metadata", color = "0.55 0.6 0.85", style="rounded"];
+	15[label = "report_age_vs_background", color = "0.20 0.6 0.85", style="rounded"];
+	16[label = "report_missing_data", color = "0.16 0.6 0.85", style="rounded"];
+	11 -> 0
+	8 -> 0
+	10 -> 0
+	16 -> 0
+	15 -> 0
+	12 -> 0
+	7 -> 0
+	1 -> 0
+	13 -> 0
+	2 -> 1
+	4 -> 1
+	4 -> 2
+	3 -> 2
+	6 -> 3
+	5 -> 3
+	4 -> 3
+	1 -> 7
+	4 -> 7
+	9 -> 8
+	1 -> 9
+	4 -> 9
+	8 -> 10
+	9 -> 11
+	9 -> 12
+	14 -> 13
+	9 -> 14
+	14 -> 15
+	14 -> 16
+}            

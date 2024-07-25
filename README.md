@@ -6,6 +6,8 @@
 
 A Snakemake pipeline to find SARS-CoV-2 clusters in a reference phylogeny.
 
+![Simplified workflow rules](/docs/rules-simple.png)
+
 It requires an input directory (`INPUT_DIR` parameter, default: `input/`) containing at least
 one `.txt` file with a list of sample IDs (one per line). Each ID list is evaluated
 separately, possibly in parallel.
