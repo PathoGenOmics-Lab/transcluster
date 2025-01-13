@@ -124,7 +124,7 @@ Path to the input and output directories, respectively.
 
 ### `MIN_PROP` and `MIN_SIZE`
 
-Threshold for cluster detections: the minimum proportion of target samples (from 0 to 1, inclusive)
+Thresholds for cluster detections: the minimum proportion of target samples (from 0 to 1, inclusive)
 and the minimum number of samples within a cluster, respectively.
 
 ### `SPACE_REPLACEMENT`

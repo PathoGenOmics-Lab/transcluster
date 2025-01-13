@@ -36,8 +36,8 @@ rule all:
     input:
         expand(OUTPUT_DIR/"{dataset}/clusters.csv", dataset=DATASETS),
         expand(OUTPUT_DIR/"{dataset}/summary.json", dataset=DATASETS),
-        expand(OUTPUT_DIR/"{dataset}/fitness/{days}d/estimated_fitness.csv", dataset=DATASETS, days=config["FITNESS_PADDING_DAYS"]),
-        expand(OUTPUT_DIR/"summary/fitness/{days}d/report.svg", days=config["FITNESS_PADDING_DAYS"]),
+        expand(OUTPUT_DIR/"{dataset}/fitness/{days}d/[{prop}]_[{size}]/estimated_fitness.csv", dataset=DATASETS, days=config["FITNESS_PADDING_DAYS"], prop=config["MIN_PROP"], size=config["MIN_SIZE"]),
+        expand(OUTPUT_DIR/"summary/fitness/{days}d/[{prop}]_[{size}]/report.svg", days=config["FITNESS_PADDING_DAYS"], prop=config["MIN_PROP"], size=config["MIN_SIZE"]),
         expand(OUTPUT_DIR/"{dataset}/timeline/timeline.svg", dataset=DATASETS),
         OUTPUT_DIR/"summary/timeline/timeline.svg",
         OUTPUT_DIR/"summary/age/transmission_age.svg",
@@ -207,7 +207,7 @@ rule estimate_fitness:
         metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
         metadata_location_column = config["METADATA_COLS"]["FULL_METADATA"]["LOCATION"]
     output:
-        fitness = OUTPUT_DIR/"{dataset}/fitness/{days_padding}d/estimated_fitness.csv"
+        fitness = OUTPUT_DIR/"{dataset}/fitness/{days_padding}d/[{prop}]_[{size}]/estimated_fitness.csv"
     script: "scripts/estimate_fitness.py"
 
 
@@ -215,17 +215,17 @@ rule report_estimated_fitness:
     threads: 1
     conda: "envs/report.yaml"
     input:
-        fitnesses = expand(OUTPUT_DIR/"{dataset}/fitness/{{days}}d/estimated_fitness.csv", dataset=DATASETS)
+        fitnesses = expand(OUTPUT_DIR/"{dataset}/fitness/{{days}}d/[{{prop}}]_[{{size}}]/estimated_fitness.csv", dataset=DATASETS)
     params:
         width_per_haplotype_mm = 50, height_mm = 240
     output:
-        report = OUTPUT_DIR/"summary/fitness/{days}d/report.svg",
-        report_simple = OUTPUT_DIR/"summary/fitness/{days}d/report.simple.svg",
-        report_data = OUTPUT_DIR/"summary/fitness/{days}d/report.csv",
-        report_adding = OUTPUT_DIR/"summary/fitness/{days}d/report_adding.svg",
-        report_slicing = OUTPUT_DIR/"summary/fitness/{days}d/report_slicing.svg",
-        summary = OUTPUT_DIR/"summary/fitness/{days}d/summary.csv",
-        report_contrast = OUTPUT_DIR/"summary/fitness/{days}d/report_contrast.csv"
+        report = OUTPUT_DIR/"summary/fitness/{days}d/[{prop}]_[{size}]/report.svg",
+        report_simple = OUTPUT_DIR/"summary/fitness/{days}d/[{prop}]_[{size}]/report.simple.svg",
+        report_data = OUTPUT_DIR/"summary/fitness/{days}d/[{prop}]_[{size}]/report.csv",
+        report_adding = OUTPUT_DIR/"summary/fitness/{days}d/[{prop}]_[{size}]/report_adding.svg",
+        report_slicing = OUTPUT_DIR/"summary/fitness/{days}d/[{prop}]_[{size}]/report_slicing.svg",
+        summary = OUTPUT_DIR/"summary/fitness/{days}d/[{prop}]_[{size}]/summary.csv",
+        report_contrast = OUTPUT_DIR/"summary/fitness/{days}d/[{prop}]_[{size}]/report_contrast.csv"
     script: "scripts/report_estimated_fitness.R"
 
 
@@ -268,7 +268,7 @@ rule build_age_corrected_haplotype_metadata:
         metadata_age_column = config["METADATA_COLS"]["FULL_METADATA"]["AGE"],
         cluster_size_threshold = config["MIN_SIZE"],
         min_age = 0,
-        max_age = 120  # Maria Branyas is 117!
+        max_age = 120  # Maria Branyas was 117 at the time
     output:
         age_corrected_metadata = OUTPUT_DIR/"{dataset}/age/metadata.csv"
     script: "scripts/build_age_corrected_metadata.R"
