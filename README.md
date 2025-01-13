@@ -90,7 +90,7 @@ so these settings ensure compatibility.
 - `ORIGINAL_ID`: the sample identifier as it appears in the sequence record in the FASTA file (default: "Virus name").
 - `UNIQUE_ID`: a unique identifier guaranteed to be specific to each sample (default: "Accession ID", the EPI_ISL IDs).
 - `DATE`: date when the sample was collected (default: "Collection date").
-- `LOCATION`: location where the sample was collected (default: "Location").
+- `LOCATION`: location where the sample was collected, either in GISAID-like format or just a single geographic denomination (default: "Location").
 - `GENDER`: gender of the host or patient from whom the sample was collected (default: "Gender").
 - `LINEAGE`: viral lineage assigned to the sample (default: "Pango lineage").
 - `AGE`: age of the host or patient from whom the sample was collected (default: "Patient age").

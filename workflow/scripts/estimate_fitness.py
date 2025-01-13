@@ -34,8 +34,8 @@ class CountryBound:
         return f"CountryBound({self.country}[{self.start.date()}, {self.end.date()}])"
 
 
-def extract_country(df: pd.DataFrame, location_col: str) -> List[str]:
-    return df[location_col].str.split(" / ").str[1]
+def extract_country(string):
+    return string.split(" / ")[1] if " / " in string else string
 
 
 def calculate_background_bounds(cluster: pd.DataFrame) -> List[CountryBound]:
@@ -123,7 +123,7 @@ def read_cluster_analysis(path: str, sep: str) -> pd.DataFrame:
     # Keep samples within transmission clusters (non-null cluster ID)
     df = df[df[ANALYSIS_CLUSTER_ID_COL].notna()]
     # Get countries
-    df["Country"] = extract_country(df, snakemake.params.metadata_location_column)
+    df["Country"] = df[snakemake.params.metadata_location_column].apply(extract_country)
     # Set dates with year and month to the middle of the month and remove dates with only year
     date_items = df[snakemake.params.metadata_date_column].str.split("-").str.len()
     df.loc[date_items == 1, snakemake.params.metadata_date_column] = pd.NA
@@ -146,7 +146,7 @@ if __name__ == "__main__":
         snakemake.input.full_metadata,
         sep=metadata_sep, usecols=[snakemake.params.metadata_id_column, snakemake.params.metadata_date_column, snakemake.params.metadata_location_column]
     )
-    metadata["Country"] = extract_country(metadata, snakemake.params.metadata_location_column)
+    metadata["Country"] = metadata[snakemake.params.metadata_location_column].apply(extract_country)
 
     # Set dates with year and month to the middle of the month and remove dates with only year
     date_items = metadata[snakemake.params.metadata_date_column].str.split("-").str.len()
