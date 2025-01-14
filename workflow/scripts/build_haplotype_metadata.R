@@ -44,6 +44,8 @@ metadata <- clusters %>%
         ),
         by = c("original_id" = snakemake@params[["metadata_originalid_column"]])
     )
+# Ensure all columns are present
+metadata <- metadata[, METADATA.SELECT.COLS]
 
 log_info("Writing metadata")
 metadata %>%
