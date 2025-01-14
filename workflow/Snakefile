@@ -106,7 +106,8 @@ rule phylogenetic_placement:
         tree_protobuf = "data/public.all.masked.pb.gz"
     params:
         reference_fasta = config["REFERENCE_FASTA"],
-        reference_id = read_fasta_IDs(config["REFERENCE_FASTA"])[0]
+        reference_id = read_fasta_IDs(config["REFERENCE_FASTA"])[0],
+        max_equally_parsimonious_placements = 1000000
     output:
         tree = OUTPUT_DIR/"{dataset}/tree.nwk",
         clades = OUTPUT_DIR/"{dataset}/clades.txt",
@@ -118,7 +119,7 @@ rule phylogenetic_placement:
         """
         cat {params.reference_fasta} {input.new_samples} > input.fasta
         faToVcf -maskSites='{input.masking_vcf}' -ref='{params.reference_id}' input.fasta input.vcf
-        usher -T {threads} -i {input.tree_protobuf} -v input.vcf -D -u -d usher_results
+        usher -T {threads} -i {input.tree_protobuf} -v input.vcf -D -u -e {params.max_equally_parsimonious_placements} -d usher_results
         mv usher_results/uncondensed-final-tree.nh {output.tree}
         mv usher_results/clades.txt {output.clades}
         mv usher_results {output.usher_dir}
