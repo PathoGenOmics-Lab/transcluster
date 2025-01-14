@@ -82,7 +82,9 @@ from this file according to their ID. Sequences must be aligned to `REFERENCE_FA
 
 Path to the GISAID metadata of the input sequences in tabular format.
 
-### `METADATA_COLS / FULL_METADATA`
+### `METADATA_COLS`
+
+#### `FULL_METADATA`
 
 This section defines the GISAID metadata column names. GISAID may update their column names over time,
 so these settings ensure compatibility.
@@ -94,6 +96,10 @@ so these settings ensure compatibility.
 - `GENDER`: gender of the host or patient from whom the sample was collected (default: "Gender").
 - `LINEAGE`: viral lineage assigned to the sample (default: "Pango lineage").
 - `AGE`: age of the host or patient from whom the sample was collected (default: "Patient age").
+
+#### `SEPARATE_LOCATION`
+
+Boolean that decides whether to separate GISAID-like location column (`/`-separated) or not.
 
 ### `REFERENCE_TREE`
 

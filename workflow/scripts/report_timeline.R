@@ -8,6 +8,7 @@ Sys.setlocale("LC_TIME", "English")
 theme_set(theme_pubclean())
 
 datecol <- sym(snakemake@params[["metadata_date_column"]])
+loccol <- sym(snakemake@params[["metadata_location_column"]])
 
 log_info("Reading metadata")
 metadata <- read_csv(
@@ -16,22 +17,29 @@ metadata <- read_csv(
 )
 
 log_info("Formatting metadata")
-# Extract countries
-plot.data <- metadata %>%
-    separate(
-        Location,
-        into = c("Continent", "Country"),
-        extra = "drop",
-        sep = "\\ /\\ ",
-        remove = FALSE
-    ) %>%
-    drop_na(Haplotype)
+if (snakemake@params$separate_location) {
+    # Extract countries
+    plot.data <- metadata %>%
+        separate(
+            !!loccol,
+            into = c("Continent", "Country"),
+            extra = "drop",
+            sep = "\\ /\\ ",
+            remove = FALSE
+        ) %>%
+        drop_na(Haplotype)
+} else {
+    # Rename country column
+    plot.data <- metadata %>%
+        rename(Country = !!loccol)
+        drop_na(Haplotype)
+}
 
 # Rank countries
 top.countries <- plot.data %>%
-  count(Country, sort = TRUE) %>%
-  top_n(snakemake@params[["n_top_countries"]], n) %>%
-  pull(Country)
+    count(Country, sort = TRUE) %>%
+    top_n(snakemake@params[["n_top_countries"]], n) %>%
+    pull(Country)
 
 # Add column for top countries
 plot.data <- plot.data %>%

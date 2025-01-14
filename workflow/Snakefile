@@ -214,7 +214,8 @@ rule report_estimated_fitness:
     input:
         fitnesses = expand(OUTPUT_DIR/"{dataset}/[{{prop}}]_[{{size}}]/fitness/{{days}}d/estimated_fitness.csv", dataset=DATASETS)
     params:
-        width_per_haplotype_mm = 50, height_mm = 240
+        width_per_haplotype_mm = 50, height_mm = 240,
+        separate_location = True
     output:
         report = OUTPUT_DIR/"summary/[{prop}]_[{size}]/fitness/{days}d/report.svg",
         report_simple = OUTPUT_DIR/"summary/[{prop}]_[{size}]/fitness/{days}d/report.simple.svg",
@@ -233,6 +234,8 @@ rule report_haplotype_timeline:
         haplotype_metadata = OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/metadata.csv"
     params:
         metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
+        metadata_location_column = config["METADATA_COLS"]["FULL_METADATA"]["LOCATION"],
+        separate_location = config["METADATA_COLS"]["SEPARATE_LOCATION"],
         n_top_countries = 5,
         width_mm = 320, height_mm = 200
     output:
@@ -248,6 +251,8 @@ rule report_summarized_timeline:
         haplotype_metadata_tables = expand(OUTPUT_DIR/"{dataset}/[{{prop}}]_[{{size}}]/metadata.csv", dataset=DATASETS)
     params:
         metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
+        metadata_location_column = config["METADATA_COLS"]["FULL_METADATA"]["LOCATION"],
+        separate_location = config["METADATA_COLS"]["SEPARATE_LOCATION"],
         n_top_countries = 11,
         width_mm = 320, height_per_haplotype_mm = 50
     output:
