@@ -99,6 +99,7 @@ lapply(
         drop_na(!!agecol) %>%
         pull(!!agecol)
       if (length(ages.1) == 0 || length(ages.2) == 0) {
+        log_warn("Cannot compare ages")
         data.frame(
           `Haplotype 1` = pair[1], `Haplotype 2` = pair[2],
           Method = NA,
