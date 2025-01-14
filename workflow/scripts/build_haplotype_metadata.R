@@ -21,6 +21,8 @@ METADATA.SELECT.COLS <- c(
     snakemake@params[["metadata_age_column"]]
 )
 
+origidcol <- sym(snakemake@params[["metadata_originalid_column"]])
+
 log_info("Reading cluster table and original IDs")
 clustering.results <- read_delim(snakemake@input[["clusters"]])
 if (is_empty(clustering.results)) {
@@ -38,11 +40,10 @@ clusters <- right_join(
 log_info("Reading full metadata and merging")
 metadata <- clusters %>%
     left_join(
-        read_delim(snakemake@input[["full_metadata"]]),
+        read_delim(snakemake@input[["full_metadata"]], col_select = all_of(METADATA.SELECT.COLS)),
         by = c("original_id" = snakemake@params[["metadata_originalid_column"]])
-    )
-# Select columns, ensuring all are present, even if duplicate
-metadata <- metadata[, METADATA.SELECT.COLS]
+    ) %>%
+    mutate(!!origidcol = original_id)
 
 log_info("Writing metadata")
 metadata %>%
