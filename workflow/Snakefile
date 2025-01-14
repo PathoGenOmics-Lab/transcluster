@@ -175,7 +175,7 @@ rule build_haplotype_metadata:
     threads: 1
     conda: "envs/trees.yaml"
     input:
-        clusters = OUTPUT_DIR/"{dataset}/clusters.csv",
+        clusters = OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/clusters.csv",
         extracted_ids = OUTPUT_DIR/"{dataset}/extracted_ids.csv",
         full_metadata = config["METADATA"]
     params:
@@ -187,7 +187,7 @@ rule build_haplotype_metadata:
         metadata_lineage_column = config["METADATA_COLS"]["FULL_METADATA"]["LINEAGE"],
         metadata_age_column = config["METADATA_COLS"]["FULL_METADATA"]["AGE"]
     output:
-        metadata = OUTPUT_DIR/"{dataset}/metadata.csv"
+        metadata = OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/metadata.csv"
     resources:
         mem_mb = 16000,
         runtime = 2 * 60
@@ -198,7 +198,7 @@ rule estimate_fitness:
     threads: 1
     input:
         full_metadata = config["METADATA"],
-        haplotype_metadata = OUTPUT_DIR/"{dataset}/metadata.csv"
+        haplotype_metadata = OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/metadata.csv"
     params:
         metadata_id_column = config["METADATA_COLS"]["FULL_METADATA"]["UNIQUE_ID"],
         metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
