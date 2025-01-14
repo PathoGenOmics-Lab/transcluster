@@ -158,19 +158,31 @@ lapply(
       # Slicing
       slicing.1 <- estimated.fitness %>%
         filter(haplotype == pair[1]) %>%
+        drop_na(fitness_slicing) %>%
         pull(fitness_slicing)
       slicing.2 <- estimated.fitness %>%
         filter(haplotype == pair[2]) %>%
+        drop_na(fitness_slicing) %>%
         pull(fitness_slicing)
-      wilcox.slicing <- wilcox.test(slicing.1, slicing.2)
+      if (length(slicing.1) == 0 || length(slicing.2) == 0) {
+        wilcox.slicing <- list(method = NA, alternative = NA, statistic = NA, p.value = NA)
+      } else {
+        wilcox.slicing <- wilcox.test(slicing.1, slicing.2)
+      }
       # Adding
       adding.1 <- estimated.fitness %>%
         filter(haplotype == pair[1]) %>%
+        drop_na(fitness_adding) %>%
         pull(fitness_adding)
       adding.2 <- estimated.fitness %>%
         filter(haplotype == pair[2]) %>%
+        drop_na(fitness_adding) %>%
         pull(fitness_adding)
-      wilcox.adding <- wilcox.test(adding.1, adding.2)
+      if (length(slicing.1) == 0 || length(slicing.2) == 0) {
+        wilcox.adding <- list(method = NA, alternative = NA, statistic = NA, p.value = NA)
+      } else {
+        wilcox.adding <- wilcox.test(adding.1, adding.2)
+      }
       # Final dataframe
       rbind(
           # Slicing
