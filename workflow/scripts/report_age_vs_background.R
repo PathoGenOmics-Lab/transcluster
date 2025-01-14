@@ -50,7 +50,7 @@ plot.data <- bg.metadata %>%
 log_info("Building age report")
 ages.haplotype <- plot.data %>% filter(`Is haplotype`) %>% pull(!!agecol)
 ages.background <- plot.data %>% filter(!`Is haplotype`) %>% pull(!!agecol)
-if (length(ages.haplotype) == 0 || length(ages.background) == 0) {
+if (length(ages.haplotype) == 0 || length(ages.background) == 0 || all(is.na(ages.haplotype)) || all(is.na(ages.background))) {
     ks.message <- "Cannot compare ages"
 } else {
     ks <- ks.test(ages.haplotype, ages.background)
