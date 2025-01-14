@@ -245,7 +245,7 @@ rule report_summarized_timeline:
     threads: 1
     conda: "envs/report.yaml"
     input:
-        haplotype_metadata_tables = expand(OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/metadata.csv", dataset=DATASETS)
+        haplotype_metadata_tables = expand(OUTPUT_DIR/"{dataset}/[{{prop}}]_[{{size}}]/metadata.csv", dataset=DATASETS)
     params:
         metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
         n_top_countries = 11,
@@ -275,7 +275,7 @@ rule report_age_differences:
     threads: 1
     conda: "envs/report.yaml"
     input:
-        age_corrected_tables = expand(OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/age/metadata.csv", dataset=DATASETS, size=config["MIN_SIZE"])
+        age_corrected_tables = expand(OUTPUT_DIR/"{dataset}/[{{prop}}]_[{{size}}]/age/metadata.csv", dataset=DATASETS)
     params:
         metadata_age_column = config["METADATA_COLS"]["FULL_METADATA"]["AGE"],
         cluster_size_threshold = lambda wildcards: wildcards.size,
@@ -311,7 +311,7 @@ rule report_missing_data:
     threads: 1
     conda: "envs/report.yaml"
     input:
-        age_corrected_tables = expand(OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/age/metadata.csv", dataset=DATASETS, size=config["MIN_SIZE"])
+        age_corrected_tables = expand(OUTPUT_DIR/"{dataset}/[{{prop}}]_[{{size}}]/age/metadata.csv", dataset=DATASETS)
     params:
         metadata_age_column = config["METADATA_COLS"]["FULL_METADATA"]["AGE"],
         metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
