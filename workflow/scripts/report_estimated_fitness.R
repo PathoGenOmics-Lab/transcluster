@@ -39,77 +39,91 @@ plot.data <- estimated.fitness %>%
          Haplotype = haplotype) %>%
   pivot_longer(cols = c(Adding, Slicing))
 
+log_info("Building global reports")
+if (nrow(plot.data) != 0) {
+  p.simple <- plot.data %>%
+    ggplot(aes(Haplotype, value, color = name)) +
+      geom_boxplot() +
+      scale_y_log10() +
+      annotation_logticks(sides = "l") +
+      scale_x_discrete(drop = FALSE) +
+      ylab("Estimated transmission fitness") +
+      # 1) Compare between fitness types
+      stat_compare_means(method = "wilcox", paired = FALSE)
+
+  p.report <- p.simple +
+      # 2) Compare pairwise
+      stat_compare_means(
+        comparisons = combinations(unique(estimated.fitness$haplotype)),
+        method = "wilcox", paired = FALSE
+      )
+
+  p.slicing <- plot.data %>%
+    filter(name == "Slicing") %>%
+    ggplot(aes(Haplotype, value)) +
+      geom_boxplot() +
+      scale_y_log10() +
+      annotation_logticks(sides = "l") +
+      scale_x_discrete(drop = FALSE) +
+      ylab("Estimated transmission fitness") +
+      # Compare pairwise
+      stat_compare_means(
+        comparisons = combinations(unique(estimated.fitness$haplotype)),
+        method = "wilcox", paired = FALSE
+      )
+
+  p.adding <- plot.data %>%
+    filter(name == "Adding") %>%
+    ggplot(aes(Haplotype, value)) +
+      geom_boxplot() +
+      scale_y_log10() +
+      annotation_logticks(sides = "l") +
+      scale_x_discrete(drop = FALSE) +
+      ylab("Estimated transmission fitness") +
+      # Compare pairwise
+      stat_compare_means(
+        comparisons = combinations(unique(estimated.fitness$haplotype)),
+        method = "wilcox", paired = FALSE
+      )
+
+} else {
+  log_warn("Plot data is empty")
+  p.simple <- plot.data %>% ggplot(aes(Haplotype, value))
+  p.report <- p.simple
+  p.slicing <- p.simple
+  p.adding <- p.simple
+}
+
 log_info("Writing global reports")
-p <- plot.data %>%
-  ggplot(aes(Haplotype, value, color = name)) +
-    geom_boxplot() +
-    scale_y_log10() +
-    annotation_logticks(sides = "l") +
-    scale_x_discrete(drop = FALSE) +
-    ylab("Estimated transmission fitness") +
-    # 1) Compare between fitness types
-    stat_compare_means(method = "wilcox", paired = FALSE)
-p
 ggsave(
   snakemake@output[["report_simple"]],
+  plot = p.simple,
   width = n.haplotypes * snakemake@params[["width_per_haplotype_mm"]],
   height = snakemake@params[["height_mm"]],
   units = "mm"
 )
 
-p +
-    # 2) Compare pairwise
-    stat_compare_means(
-      comparisons = combinations(unique(estimated.fitness$haplotype)),
-      method = "wilcox", paired = FALSE
-    )
-
 ggsave(
   snakemake@output[["report"]],
+  plot = p.report,
   width = n.haplotypes * snakemake@params[["width_per_haplotype_mm"]],
   height = snakemake@params[["height_mm"]],
   units = "mm"
 )
 
 log_info("Writing fitness-adding report")
-plot.data %>%
-  filter(name == "Adding") %>%
-  ggplot(aes(Haplotype, value)) +
-    geom_boxplot() +
-    scale_y_log10() +
-    annotation_logticks(sides = "l") +
-    scale_x_discrete(drop = FALSE) +
-    ylab("Estimated transmission fitness") +
-    # Compare pairwise
-    stat_compare_means(
-      comparisons = combinations(unique(estimated.fitness$haplotype)),
-      method = "wilcox", paired = FALSE
-    )
-
 ggsave(
   snakemake@output[["report_adding"]],
+  plot = p.adding,
   width = n.haplotypes * snakemake@params[["width_per_haplotype_mm"]],
   height = snakemake@params[["height_mm"]],
   units = "mm"
 )
 
 log_info("Writing fitness-slicing report")
-plot.data %>%
-  filter(name == "Slicing") %>%
-  ggplot(aes(Haplotype, value)) +
-    geom_boxplot() +
-    scale_y_log10() +
-    annotation_logticks(sides = "l") +
-    scale_x_discrete(drop = FALSE) +
-    ylab("Estimated transmission fitness") +
-    # Compare pairwise
-    stat_compare_means(
-      comparisons = combinations(unique(estimated.fitness$haplotype)),
-      method = "wilcox", paired = FALSE
-    )
-
 ggsave(
   snakemake@output[["report_slicing"]],
+  plot = p.slicing,
   width = n.haplotypes * snakemake@params[["width_per_haplotype_mm"]],
   height = snakemake@params[["height_mm"]],
   units = "mm"
