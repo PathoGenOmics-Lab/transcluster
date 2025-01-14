@@ -106,10 +106,11 @@ rule phylogenetic_placement:
         tree_protobuf = "data/public.all.masked.pb.gz"
     params:
         reference_fasta = config["REFERENCE_FASTA"],
-        reference_id = read_fasta_IDs(config["REFERENCE_FASTA"])[0],
-        output_directory = "pp_out"  # if shadow == "shallow", it will be removed
+        reference_id = read_fasta_IDs(config["REFERENCE_FASTA"])[0]
     output:
-        tree = OUTPUT_DIR/"{dataset}/tree.nwk"
+        tree = OUTPUT_DIR/"{dataset}/tree.nwk",
+        clades = OUTPUT_DIR/"{dataset}/clades.txt",
+        usher_dir = temp(directory(OUTPUT_DIR/"{dataset}/usher_results"))
     resources:
         mem_mb = 16000,
         runtime = 12 * 60
@@ -117,8 +118,10 @@ rule phylogenetic_placement:
         """
         cat {params.reference_fasta} {input.new_samples} > input.fasta
         faToVcf -maskSites='{input.masking_vcf}' -ref='{params.reference_id}' input.fasta input.vcf
-        usher -T {threads} -i {input.tree_protobuf} -v input.vcf -u -d {params.output_directory}
-        cp {params.output_directory}/uncondensed-final-tree.nh {output.tree}
+        usher -T {threads} -i {input.tree_protobuf} -v input.vcf -D -u -d usher_results
+        mv usher_results/uncondensed-final-tree.nh {output.tree}
+        mv usher_results/clades.txt {output.clades}
+        mv usher_results {output.usher_dir}
         """
 
 
