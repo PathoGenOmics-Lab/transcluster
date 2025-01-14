@@ -148,9 +148,9 @@ if __name__ == "__main__":
     )
     metadata["Country"] = metadata[snakemake.params.metadata_location_column].apply(extract_country)
 
-    # Set dates with year and month to the middle of the month and remove dates with only year
+    # Set dates with year and month to the middle of the month and remove dates with only year or too many fields
     date_items = metadata[snakemake.params.metadata_date_column].str.split("-").str.len()
-    metadata.loc[date_items == 1, snakemake.params.metadata_date_column] = pd.NA
+    metadata.loc[(2 > date_items) | (date_items > 3), snakemake.params.metadata_date_column] = pd.NA
     metadata.loc[date_items == 2, snakemake.params.metadata_date_column] = metadata[snakemake.params.metadata_date_column] + "-15"
     metadata["Date"] = pd.to_datetime(metadata[snakemake.params.metadata_date_column], errors="raise")
 
