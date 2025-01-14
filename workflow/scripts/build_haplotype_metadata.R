@@ -43,7 +43,7 @@ metadata <- clusters %>%
         read_delim(snakemake@input[["full_metadata"]], col_select = all_of(METADATA.SELECT.COLS)),
         by = c("original_id" = snakemake@params[["metadata_originalid_column"]])
     ) %>%
-    mutate(!!origidcol = original_id)
+    mutate(!!origidcol := original_id)
 
 log_info("Writing metadata")
 metadata %>%
