@@ -11,7 +11,7 @@ datecol <- sym(snakemake@params[["metadata_date_column"]])
 loccol <- sym(snakemake@params[["metadata_location_column"]])
 
 log_info("Reading metadata")
-metadata <- read_csv(
+plot.data <- read_csv(
     snakemake@input[["haplotype_metadata"]],
     col_types = cols(!!datecol := "D")
 )
@@ -19,7 +19,7 @@ metadata <- read_csv(
 log_info("Formatting metadata")
 if (snakemake@params$separate_location) {
     # Extract countries
-    plot.data <- metadata %>%
+    plot.data <- plot.data %>%
         separate(
             !!loccol,
             into = c("Continent", "Country"),
@@ -30,7 +30,7 @@ if (snakemake@params$separate_location) {
         drop_na(Haplotype)
 } else {
     # Rename country column
-    plot.data <- metadata %>%
+    plot.data <- plot.data %>%
         rename(Country = !!loccol)
         drop_na(Haplotype)
 }

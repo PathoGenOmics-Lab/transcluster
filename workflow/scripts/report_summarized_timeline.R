@@ -21,7 +21,7 @@ n.haplotypes <- length(snakemake@input[["haplotype_metadata_tables"]])
 log_info("Formatting metadata")
 if (snakemake@params$separate_location) {
     # Extract countries
-    plot.data <- metadata %>%
+    plot.data <- plot.data %>%
         separate(
             !!loccol,
             into = c("Continent", "Country"),
@@ -32,7 +32,7 @@ if (snakemake@params$separate_location) {
         drop_na(Haplotype)
 } else {
     # Rename country column
-    plot.data <- metadata %>%
+    plot.data <- plot.data %>%
         rename(Country = !!loccol)
         drop_na(Haplotype)
 }
