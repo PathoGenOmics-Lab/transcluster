@@ -36,13 +36,13 @@ rule all:
     input:
         expand(OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/clusters.csv", dataset=DATASETS, prop=config["MIN_PROP"], size=config["MIN_SIZE"]),
         expand(OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/summary.json", dataset=DATASETS, prop=config["MIN_PROP"], size=config["MIN_SIZE"]),
-        expand(OUTPUT_DIR/"{dataset}/fitness/{days}d/[{prop}]_[{size}]/estimated_fitness.csv", dataset=DATASETS, days=config["FITNESS_PADDING_DAYS"], prop=config["MIN_PROP"], size=config["MIN_SIZE"]),
-        expand(OUTPUT_DIR/"summary/fitness/{days}d/[{prop}]_[{size}]/report.svg", days=config["FITNESS_PADDING_DAYS"], prop=config["MIN_PROP"], size=config["MIN_SIZE"]),
-        expand(OUTPUT_DIR/"{dataset}/timeline/timeline.svg", dataset=DATASETS),
-        OUTPUT_DIR/"summary/timeline/timeline.svg",
-        expand(OUTPUT_DIR/"summary/age/[{size}]/transmission_age.svg", size=config["MIN_SIZE"]),
-        expand(OUTPUT_DIR/"{dataset}/age/[{size}]/vs_background.svg", dataset=DATASETS, size=config["MIN_SIZE"]),
-        expand(OUTPUT_DIR/"summary/missing/[{size}]/age.svg", size=config["MIN_SIZE"])
+        expand(OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/fitness/{days}d/estimated_fitness.csv", dataset=DATASETS, days=config["FITNESS_PADDING_DAYS"], prop=config["MIN_PROP"], size=config["MIN_SIZE"]),
+        expand(OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/timeline/timeline.svg", dataset=DATASETS, prop=config["MIN_PROP"], size=config["MIN_SIZE"]),
+        expand(OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/age/vs_background.svg", dataset=DATASETS, prop=config["MIN_PROP"], size=config["MIN_SIZE"]),
+        expand(OUTPUT_DIR/"summary/[{prop}]_[{size}]/timeline/timeline.svg", prop=config["MIN_PROP"], size=config["MIN_SIZE"]),
+        expand(OUTPUT_DIR/"summary/[{prop}]_[{size}]/age/transmission_age.svg", prop=config["MIN_PROP"], size=config["MIN_SIZE"]),
+        expand(OUTPUT_DIR/"summary/[{prop}]_[{size}]/fitness/{days}d/report.svg", days=config["FITNESS_PADDING_DAYS"], prop=config["MIN_PROP"], size=config["MIN_SIZE"]),
+        expand(OUTPUT_DIR/"summary/[{prop}]_[{size}]/missing/age.svg", prop=config["MIN_PROP"], size=config["MIN_SIZE"])
 
 
 rule get_problematic_vcf:
@@ -204,7 +204,7 @@ rule estimate_fitness:
         metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
         metadata_location_column = config["METADATA_COLS"]["FULL_METADATA"]["LOCATION"]
     output:
-        fitness = OUTPUT_DIR/"{dataset}/fitness/{days_padding}d/[{prop}]_[{size}]/estimated_fitness.csv"
+        fitness = OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/fitness/{days_padding}d/estimated_fitness.csv"
     script: "scripts/estimate_fitness.py"
 
 
@@ -212,17 +212,17 @@ rule report_estimated_fitness:
     threads: 1
     conda: "envs/report.yaml"
     input:
-        fitnesses = expand(OUTPUT_DIR/"{dataset}/fitness/{{days}}d/[{{prop}}]_[{{size}}]/estimated_fitness.csv", dataset=DATASETS)
+        fitnesses = expand(OUTPUT_DIR/"{dataset}/[{{prop}}]_[{{size}}]/fitness/{{days}}d/estimated_fitness.csv", dataset=DATASETS)
     params:
         width_per_haplotype_mm = 50, height_mm = 240
     output:
-        report = OUTPUT_DIR/"summary/fitness/{days}d/[{prop}]_[{size}]/report.svg",
-        report_simple = OUTPUT_DIR/"summary/fitness/{days}d/[{prop}]_[{size}]/report.simple.svg",
-        report_data = OUTPUT_DIR/"summary/fitness/{days}d/[{prop}]_[{size}]/report.csv",
-        report_adding = OUTPUT_DIR/"summary/fitness/{days}d/[{prop}]_[{size}]/report_adding.svg",
-        report_slicing = OUTPUT_DIR/"summary/fitness/{days}d/[{prop}]_[{size}]/report_slicing.svg",
-        summary = OUTPUT_DIR/"summary/fitness/{days}d/[{prop}]_[{size}]/summary.csv",
-        report_contrast = OUTPUT_DIR/"summary/fitness/{days}d/[{prop}]_[{size}]/report_contrast.csv"
+        report = OUTPUT_DIR/"summary/[{prop}]_[{size}]/fitness/{days}d/report.svg",
+        report_simple = OUTPUT_DIR/"summary/[{prop}]_[{size}]/fitness/{days}d/report.simple.svg",
+        report_data = OUTPUT_DIR/"summary/[{prop}]_[{size}]/fitness/{days}d/report.csv",
+        report_adding = OUTPUT_DIR/"summary/[{prop}]_[{size}]/fitness/{days}d/report_adding.svg",
+        report_slicing = OUTPUT_DIR/"summary/[{prop}]_[{size}]/fitness/{days}d/report_slicing.svg",
+        summary = OUTPUT_DIR/"summary/[{prop}]_[{size}]/fitness/{days}d/summary.csv",
+        report_contrast = OUTPUT_DIR/"summary/[{prop}]_[{size}]/fitness/{days}d/report_contrast.csv"
     script: "scripts/report_estimated_fitness.R"
 
 
@@ -230,14 +230,14 @@ rule report_haplotype_timeline:
     threads: 1
     conda: "envs/report.yaml"
     input:
-        haplotype_metadata = OUTPUT_DIR/"{dataset}/metadata.csv"
+        haplotype_metadata = OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/metadata.csv"
     params:
         metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
         n_top_countries = 5,
         width_mm = 320, height_mm = 200
     output:
-        report = OUTPUT_DIR/"{dataset}/timeline/timeline.svg",
-        report_data = OUTPUT_DIR/"{dataset}/timeline/timeline.csv"
+        report = OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/timeline/timeline.svg",
+        report_data = OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/timeline/timeline.csv"
     script: "scripts/report_timeline.R"
 
 
@@ -245,14 +245,14 @@ rule report_summarized_timeline:
     threads: 1
     conda: "envs/report.yaml"
     input:
-        haplotype_metadata_tables = expand(OUTPUT_DIR/"{dataset}/metadata.csv", dataset=DATASETS)
+        haplotype_metadata_tables = expand(OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/metadata.csv", dataset=DATASETS)
     params:
         metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
         n_top_countries = 11,
         width_mm = 320, height_per_haplotype_mm = 50
     output:
-        report = OUTPUT_DIR/"summary/timeline/timeline.svg",
-        report_data = OUTPUT_DIR/"summary/timeline/timeline.csv"
+        report = OUTPUT_DIR/"summary/[{prop}]_[{size}]/timeline/timeline.svg",
+        report_data = OUTPUT_DIR/"summary/[{prop}]_[{size}]/timeline/timeline.csv"
     script: "scripts/report_summarized_timeline.R"
 
 
@@ -260,14 +260,14 @@ rule build_age_corrected_haplotype_metadata:
     threads: 1
     conda: "envs/report.yaml"
     input:
-        haplotype_metadata = OUTPUT_DIR/"{dataset}/metadata.csv"
+        haplotype_metadata = OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/metadata.csv"
     params:
         metadata_age_column = config["METADATA_COLS"]["FULL_METADATA"]["AGE"],
         cluster_size_threshold = lambda wildcards: wildcards.size,
         min_age = 0,
         max_age = 120  # Maria Branyas was 117 at the time
     output:
-        age_corrected_metadata = OUTPUT_DIR/"{dataset}/age/[{size}]/metadata.csv"
+        age_corrected_metadata = OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/age/metadata.csv"
     script: "scripts/build_age_corrected_metadata.R"
 
 
@@ -275,16 +275,16 @@ rule report_age_differences:
     threads: 1
     conda: "envs/report.yaml"
     input:
-        age_corrected_tables = expand(OUTPUT_DIR/"{dataset}/age/[{size}]/metadata.csv", dataset=DATASETS, size=config["MIN_SIZE"])
+        age_corrected_tables = expand(OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/age/metadata.csv", dataset=DATASETS, size=config["MIN_SIZE"])
     params:
         metadata_age_column = config["METADATA_COLS"]["FULL_METADATA"]["AGE"],
         cluster_size_threshold = lambda wildcards: wildcards.size,
         width_per_haplotype_mm = 50, height_mm = 300
     output:
-        report_haplotype = OUTPUT_DIR/"summary/age/[{size}]/haplotype_age.svg",
-        report_haplotype_contrast = OUTPUT_DIR/"summary/age/[{size}]/haplotype_age.contrast.csv",
-        report_haplotype_simple = OUTPUT_DIR/"summary/age/[{size}]/haplotype_age.simple.svg",
-        report_transmission = OUTPUT_DIR/"summary/age/[{size}]/transmission_age.svg"
+        report_haplotype = OUTPUT_DIR/"summary/[{prop}]_[{size}]/age/haplotype_age.svg",
+        report_haplotype_contrast = OUTPUT_DIR/"summary/[{prop}]_[{size}]/age/haplotype_age.contrast.csv",
+        report_haplotype_simple = OUTPUT_DIR/"summary/[{prop}]_[{size}]/age/haplotype_age.simple.svg",
+        report_transmission = OUTPUT_DIR/"summary/[{prop}]_[{size}]/age/transmission_age.svg"
     script: "scripts/report_age_differences.R"
 
 
@@ -292,7 +292,7 @@ rule report_age_vs_background:
     threads: 1
     conda: "envs/report.yaml"
     input:
-        age_corrected_metadata = OUTPUT_DIR/"{dataset}/age/[{size}]/metadata.csv",
+        age_corrected_metadata = OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/age/metadata.csv",
         full_metadata = config["METADATA"]
     params:
         metadata_age_column = config["METADATA_COLS"]["FULL_METADATA"]["AGE"],
@@ -302,8 +302,8 @@ rule report_age_vs_background:
         max_age = rules.build_age_corrected_haplotype_metadata.params.max_age,
         width_mm = 320, height_mm = 200
     output:
-        report = OUTPUT_DIR/"{dataset}/age/[{size}]/vs_background.svg",
-        report_data = OUTPUT_DIR/"{dataset}/age/[{size}]/vs_background.csv"
+        report = OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/age/vs_background.svg",
+        report_data = OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/age/vs_background.csv"
     script: "scripts/report_age_vs_background.R"
 
 
@@ -311,14 +311,14 @@ rule report_missing_data:
     threads: 1
     conda: "envs/report.yaml"
     input:
-        age_corrected_tables = expand(OUTPUT_DIR/"{dataset}/age/[{size}]/metadata.csv", dataset=DATASETS, size=config["MIN_SIZE"])
+        age_corrected_tables = expand(OUTPUT_DIR/"{dataset}/[{prop}]_[{size}]/age/metadata.csv", dataset=DATASETS, size=config["MIN_SIZE"])
     params:
         metadata_age_column = config["METADATA_COLS"]["FULL_METADATA"]["AGE"],
         metadata_date_column = config["METADATA_COLS"]["FULL_METADATA"]["DATE"],
         metadata_location_column = config["METADATA_COLS"]["FULL_METADATA"]["LOCATION"],
         width_mm = 320, height_mm = 200
     output:
-        report_age = OUTPUT_DIR/"summary/missing/[{size}]/age.svg",
-        report_location = OUTPUT_DIR/"summary/missing/[{size}]/location.svg",
-        report_date = OUTPUT_DIR/"summary/missing/[{size}]/date.svg"
+        report_age = OUTPUT_DIR/"summary/[{prop}]_[{size}]/missing/age.svg",
+        report_location = OUTPUT_DIR/"summary/[{prop}]_[{size}]/missing/location.svg",
+        report_date = OUTPUT_DIR/"summary/[{prop}]_[{size}]/missing/date.svg"
     script: "scripts/report_missing_data.R"
