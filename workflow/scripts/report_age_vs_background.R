@@ -17,7 +17,7 @@ datecol <- sym(snakemake@params[["metadata_date_column"]])
 log_info("Reading age-corrected haplotype IDs, ages and dates")
 age.metadata <- read_csv(
     snakemake@input[["age_corrected_metadata"]],
-    col_select = c(!!idcol, !!agecol, !!datecol),
+    col_select = c(original_id, !!agecol, !!datecol),
     col_types = cols(!!agecol := "n", !!datecol := "D")
 )
 
@@ -43,7 +43,7 @@ log_info("Building combined age table")
 # The pipeline ensures age.metadata is a subset of bg.metadata
 plot.data <- bg.metadata %>%
     mutate(
-        `Is haplotype` = !!idcol %in% age.metadata[[idcol]]
+        `Is haplotype` = !!idcol %in% age.metadata$original_id
     )
 
 
