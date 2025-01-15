@@ -33,7 +33,7 @@ if (snakemake@params$separate_location) {
 } else {
     # Rename country column
     plot.data <- plot.data %>%
-        rename(Country = !!loccol)
+        rename(Country = !!loccol) %>%
         drop_na(Haplotype)
 }
 
