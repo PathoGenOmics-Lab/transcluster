@@ -29,8 +29,10 @@ if __name__ == "__main__":
     summary["total_observations"] = len(input_ids)
     summary["analyzed_observations"] = len(extracted_ids)
     transmitted_ids = set(clusters["label"])
-    non_transmitted_ids = extracted_ids - transmitted_ids
+    transmitted_extracted_ids = transmitted_ids.intersection(extracted_ids)
+    non_transmitted_ids = extracted_ids - transmitted_extracted_ids
     summary["transmitted_observations"] = len(transmitted_ids)
+    summary["transmitted_analyzed_observations"] = len(transmitted_extracted_ids)
     ## Count transmission events
     summary["n_clusters"] = clusters["cluster_id"].unique().size
     summary["n_emergences"] = summary["n_clusters"] + len(non_transmitted_ids)
