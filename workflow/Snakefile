@@ -111,6 +111,7 @@ rule phylogenetic_placement:
     output:
         tree = OUTPUT_DIR/"{dataset}/tree.nwk",
         clades = OUTPUT_DIR/"{dataset}/clades.txt",
+        tree_pb = temp(OUTPUT_DIR/"{dataset}/tree.annotated.pb"),
         usher_dir = temp(directory(OUTPUT_DIR/"{dataset}/usher_results"))
     resources:
         mem_mb = 16000,
@@ -119,7 +120,7 @@ rule phylogenetic_placement:
         """
         cat {params.reference_fasta} {input.new_samples} > input.fasta
         faToVcf -maskSites='{input.masking_vcf}' -ref='{params.reference_id}' input.fasta input.vcf
-        usher -T {threads} -i {input.tree_protobuf} -v input.vcf -D -u -e {params.max_equally_parsimonious_placements} -d usher_results
+        usher -T {threads} -i {input.tree_protobuf} -o {output.tree_pb} -v input.vcf -D -u -e {params.max_equally_parsimonious_placements} -d usher_results
         mv usher_results/uncondensed-final-tree.nh {output.tree}
         mv usher_results/clades.txt {output.clades}
         mv usher_results {output.usher_dir}
