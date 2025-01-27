@@ -66,15 +66,17 @@ rule get_reference_tree:
     shadow: "shallow"
     output:
         tree_path = "data/public.all.masked.pb.gz"
+    params:
+        reference_tree = config["REFERENCE_TREE"]
     resources:
         mem_mb = 2000,
         runtime = 15
     retries: 3
     run:
-        if config["REFERENCE_TREE"].startswith("https://"):
-            download_file(config["REFERENCE_TREE"], output.tree_path)
+        if params.reference_tree.startswith("https://"):
+            download_file(params.reference_tree, output.tree_path)
         else:
-            copy_file(config["REFERENCE_TREE"], output.tree_path)
+            copy_file(params.reference_tree, output.tree_path)
 
 
 rule extract_records:
