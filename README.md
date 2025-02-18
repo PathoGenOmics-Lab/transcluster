@@ -24,8 +24,9 @@ parameters, default: ≥2 members and ≥90% proportion of target samples),
 using [`tcfinder`](https://github.com/PathoGenOmics-Lab/tcfinder).
 
 Additionally,
-a fitness metric is estimated for each cluster by calculating the the ratio of the number
-of tips in the cluster to the number of sequences deposited in GISAID during the same time period.
+a normalized clustering index is estimated for each cluster by calculating the the ratio of the number
+of tips in the cluster to the number of background sequences (by default, those deposited in GISAID) during the same time period.
+The metric can be interpreted as an estimation of the transmission fitness in certain cases.
 These "background" samples include those collected between the first and last case within the
 cluster. The time window is symmetrically padded with a specified number of days (`FITNESS_PADDING_DAYS`
 parameter, default: 0 and 7). The denominator helps control for the effect of uneven sequencing
@@ -37,7 +38,7 @@ efforts across different times and locations, and is calculated in two ways:
 
 ![Estimated fitness denominator](/docs/estimated-fitness-denominator.png)
 
-Finally, a series of figures (including sample timelines, comparisons of estimated fitness and missing data),
+Finally, a series of figures (including sample timelines, comparisons of normalized clustering index and missing data),
 are generated. Results are written to a subdirectory within the output directory
 (`OUTPUT_DIR` parameter, default: `output/`).
 
@@ -140,7 +141,7 @@ the analysis.
 
 ### `FITNESS_PADDING_DAYS`
 
-A list of integers that specify the number of days to pad the fitness estimation denominator time windows with.
+A list of integers that specify the number of days to pad the normalized clustering index denominator time windows with.
 
 ## Testing the pipeline
 
