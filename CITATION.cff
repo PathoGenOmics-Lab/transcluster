@@ -1,0 +1,45 @@
+cff-version: 1.2.0
+message: "This pipeline was developed as part of a larger study. If you use this software, please cite it as below."
+authors:
+  - family-names: "Álvarez-Herrera"
+    given-names: "Miguel"
+    orcid: "https://orcid.org/0000-0002-7922-3180"
+title: "transcluster"
+version: 2.1.0
+date-released: 2025-01-29
+url: "https://github.com/PathoGenOmics-Lab/transcluster"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Álvarez-Herrera"
+    given-names: "Miguel"
+  - family-names: "Ruiz-Rodriguez"
+    given-names: "Paula"
+  - family-names: "Navarro-Domínguez"
+    given-names: "Beatriz"
+  - family-names: "Zulaica"
+    given-names: "Joao"
+  - family-names: "Grau"
+    given-names: "Brayan"
+  - family-names: "Bracho"
+    given-names: "María Alma"
+  - family-names: "Guerreiro"
+    given-names: "Manuel"
+  - family-names: "Aguilar-Gallardo"
+    given-names: "Cristóbal"
+  - family-names: "González-Candelas"
+    given-names: "Fernando"
+  - family-names: "Comas"
+    given-names: "Iñaki"
+  - family-names: "Geller"
+    given-names: "Ron"
+  - family-names: "Coscollá"
+    given-names: "Mireia"
+  doi: "10.1093/ve/veaf015"
+  journal: "Virus Evolution"
+  month: 3
+  pages: veaf015
+  title: "Genome data artifacts and functional studies of deletion repair in the BA.1 SARS-CoV-2 spike protein"
+  issue: 1
+  volume: 11
+  year: 2025
